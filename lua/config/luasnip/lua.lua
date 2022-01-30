@@ -1,0 +1,4 @@
+local luasnip = require "luasnip"
+local utils = require "config.luasnip.utils"
+
+luasnip.snippets.lua = vim.list_extend({}, utils.print_snip("log", "print"))
