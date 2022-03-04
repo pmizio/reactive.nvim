@@ -1,4 +1,5 @@
-local m = require "mapx"
+local builtin = require "telescope.builtin"
+local themes = require "telescope.themes"
 
 local function on_attach(client, bufnr)
   client.resolved_capabilities.document_range_formatting = false
@@ -8,20 +9,29 @@ local function on_attach(client, bufnr)
 
   buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
-  local buffer = { buffer = bufnr }
+  local function lsp_map(lhs, rhs)
+    vim.keymap.set("n", lhs, rhs, {
+      silent = true,
+      buffer = bufnr,
+    })
+  end
 
-  m.nnoremap("gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", "silent", buffer)
-  m.nnoremap("gd", "<cmd>lua vim.lsp.buf.definition()<CR>", "silent", buffer)
-  m.nnoremap("gh", "<cmd>lua vim.lsp.buf.hover()<CR>", "silent")
-  m.nnoremap("gv", "<cmd>vs | lua vim.lsp.buf.definition()<CR>", "silent", buffer)
-  m.nnoremap("gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", "silent", buffer)
-  m.nnoremap("gs", "<cmd>lua vim.lsp.buf.signature_help()<CR>", "silent", buffer)
-  m.nnoremap("<space>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", "silent", buffer)
-  m.nnoremap("<space>rr", "<cmd>lua vim.lsp.buf.rename()<CR>", "silent")
-  m.nnoremap("<space>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", "silent")
-  m.nnoremap("gr", "<cmd>lua vim.lsp.buf.references()<CR>", "silent", buffer)
-  m.nnoremap("[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", "silent", buffer)
-  m.nnoremap("]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", "silent", buffer)
+  lsp_map("gD", vim.lsp.buf.declaration)
+  lsp_map("gd", function()
+    builtin.lsp_definitions(themes.get_ivy())
+  end)
+  lsp_map("gh", vim.lsp.buf.hover)
+  lsp_map("gv", "<cmd>vs | lua vim.lsp.buf.definition()<CR>")
+  lsp_map("gi", vim.lsp.buf.implementation)
+  lsp_map("gs", vim.lsp.buf.signature_help)
+  lsp_map("<space>D", vim.lsp.buf.type_definition)
+  lsp_map("<space>rr", vim.lsp.buf.rename)
+  lsp_map("<space>ca", vim.lsp.buf.code_action)
+  lsp_map("gr", function()
+    builtin.lsp_references(themes.get_ivy())
+  end)
+  lsp_map("[d", vim.lsp.diagnostic.goto_prev)
+  lsp_map("]d", vim.lsp.diagnostic.goto_next)
 end
 
 local handlers = {
@@ -73,8 +83,12 @@ require("nvim-lsp-installer").on_server_ready(function(server)
     autostart = true,
     capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     on_attach = function(client, bufnr)
-      client.resolved_capabilities.document_formatting = server.name == "eslint"
-      on_attach(client, bufnr)
+      if server.name == "eslint" then
+        client.resolved_capabilities.document_formatting = true
+        require("lsp-format").on_attach(client)
+      else
+        on_attach(client, bufnr)
+      end
     end,
     handlers = handlers,
   }, settings[server.name] or {}))

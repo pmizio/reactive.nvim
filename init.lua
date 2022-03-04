@@ -70,7 +70,12 @@ require("packer").startup(function(use)
 
   use {
     "williamboman/nvim-lsp-installer",
-    requires = { "neovim/nvim-lspconfig", opt = true },
+    requires = {
+
+      { "neovim/nvim-lspconfig", opt = true },
+
+      { "lukas-reineke/lsp-format.nvim", opt = true },
+    },
     config = function()
       require "config.lsp"
     end,
@@ -105,10 +110,9 @@ require("packer").startup(function(use)
   }
 
   use {
-    "mhartington/formatter.nvim",
-    cmd = { "Format", "FormatWrite", "FormatterPost" },
+    "lukas-reineke/lsp-format.nvim",
     config = function()
-      require "config.formatter"
+      require "config.lsp.format"
     end,
   }
 
@@ -180,7 +184,7 @@ require("packer").startup(function(use)
   use {
     "stevearc/dressing.nvim",
     config = function()
-      require "config.dressing"
+      require("dressing").setup {}
     end,
   }
 
@@ -268,7 +272,6 @@ function! ToggleTreeWidth(size)
 endfunction
 
 au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
-au BufWritePost *.js,*.jsx,*.ts,*.tsx,*.lua FormatWrite
 au FileType gitcommit au BufEnter <buffer> lua BaseCommit()
 
 command! SoConf lua ReloadConfig()<CR>
