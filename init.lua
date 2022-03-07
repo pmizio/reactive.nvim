@@ -69,15 +69,19 @@ require("packer").startup(function(use)
   }
 
   use {
-    "williamboman/nvim-lsp-installer",
+    "neovim/nvim-lspconfig",
     requires = {
-
-      { "neovim/nvim-lspconfig", opt = true },
-
-      { "lukas-reineke/lsp-format.nvim", opt = true },
+      "williamboman/nvim-lsp-installer",
     },
     config = function()
       require "config.lsp"
+    end,
+  }
+
+  use {
+    "lukas-reineke/lsp-format.nvim",
+    config = function()
+      require "config.lsp.format"
     end,
   }
 
@@ -106,13 +110,6 @@ require("packer").startup(function(use)
     },
     config = function()
       require "config.lsp.cmp"
-    end,
-  }
-
-  use {
-    "lukas-reineke/lsp-format.nvim",
-    config = function()
-      require "config.lsp.format"
     end,
   }
 
