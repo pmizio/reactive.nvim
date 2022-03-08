@@ -1,7 +1,8 @@
-local m = require "mapx"
-
+local map = vim.keymap.set
 local actions = require "telescope.actions"
 local telescope = require "telescope"
+local builtin = require "telescope.builtin"
+
 telescope.setup {
   defaults = {
     sorting_strategy = "ascending",
@@ -29,10 +30,18 @@ telescope.setup {
   },
 }
 telescope.load_extension "fzf"
+telescope.load_extension "git_worktree"
+telescope.load_extension "project"
 
-m.nnoremap("<C-p>", "<cmd>lua require'telescope.builtin'.find_files{ path_display = { 'shorten' } }<CR>")
-m.nnoremap("<C-f>", "<cmd>lua require'telescope.builtin'.live_grep{ only_sort_text = true }<CR>")
-m.nnoremap("<leader>b", "<cmd>lua require'telescope.builtin'.buffers()<CR>")
-m.nnoremap("<C-g>", "<cmd>lua require'telescope.builtin'.git_branches()<CR>")
-m.nnoremap("<leader>w", "<cmd>lua require'telescope'.extensions.git_worktree.git_worktrees()<CR>")
-m.nnoremap("<leader>p", "<cmd>lua require'telescope'.extensions.project.project{}<CR>")
+map("n", "<C-p>", function()
+  builtin.find_files { path_display = { "shorten" } }
+end)
+map("n", "<C-f>", function()
+  builtin.live_grep { only_sort_text = true }
+end)
+map("n", "<leader>b", builtin.buffers)
+map("n", "<C-g>", builtin.git_branches)
+map("n", "<leader>w", telescope.extensions.git_worktree.git_worktrees)
+map("n", "<leader>p", function()
+  telescope.extensions.project.project {}
+end)

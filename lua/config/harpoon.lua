@@ -1,20 +1,19 @@
+local map = vim.keymap.set
 local ui = require "harpoon.ui"
 
 require("harpoon").setup {}
 
-vim.keymap.set("n", "<leader>a", function()
-  require("harpoon.mark").add_file()
-end)
-vim.keymap.set("n", "<leader>j", function()
+map("n", "<leader>a", require("harpoon.mark").add_file)
+map("n", "<leader>j", function()
   ui.nav_file(1)
 end)
-vim.keymap.set("n", "<leader>k", function()
+map("n", "<leader>k", function()
   ui.nav_file(2)
 end)
-vim.keymap.set("n", "<leader>l", function()
+map("n", "<leader>l", function()
   ui.nav_file(3)
 end)
-vim.keymap.set("n", "<leader>h", function()
+map("n", "<leader>h", function()
   ui.nav_file(4)
 end)
 

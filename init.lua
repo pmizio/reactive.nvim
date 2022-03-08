@@ -1,6 +1,7 @@
 local set = vim.opt
 local g = vim.g
 local fn = vim.fn
+local map = vim.keymap.set
 
 vim.cmd "filetype indent off"
 set.number = true
@@ -45,8 +46,6 @@ require("packer").startup(function(use)
 
   use "nvim-lua/plenary.nvim"
   use "nvim-lua/popup.nvim"
-
-  use "b0o/mapx.nvim"
 
   use {
     "nvim-treesitter/nvim-treesitter",
@@ -117,6 +116,8 @@ require("packer").startup(function(use)
     "nvim-telescope/telescope.nvim",
     requires = {
       { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
+      "ThePrimeagen/git-worktree.nvim",
+      "nvim-telescope/telescope-project.nvim",
     },
     config = function()
       require "config.telescope"
@@ -192,56 +193,54 @@ end)
 
 vim.cmd "colorscheme gruvbox"
 
-local m = require "mapx"
-
-m.nnoremap("<ESC>", ":nohl <ESC>", "silent")
+map("n", "<ESC>", ":nohl <ESC>", { silent = true })
 
 -- map jk and kj to esc
-m.inoremap("<ESC>", "<NOP>")
-m.inoremap("jk", "<C-o>:nohl<CR><ESC>", "silent")
-m.inoremap("kj", "<C-o>:nohl<CR><ESC>", "silent")
-m.tnoremap("jk", "<C-\\><C-n>", "silent")
-m.tnoremap("kj", "<C-\\><C-n>", "silent")
+map("i", "<ESC>", "<NOP>")
+map("i", "jk", "<C-o>:nohl<CR><ESC>", { silent = true })
+map("i", "kj", "<C-o>:nohl<CR><ESC>", { silent = true })
+map("t", "jk", "<C-\\><C-n>", { silent = true })
+map("t", "kj", "<C-\\><C-n>", { silent = true })
 
 -- disable ex mode
-m.map("Q", "<NOP>")
+map("", "Q", "<NOP>")
 
 -- map keys for move over code completion
-m.inoremap("<C-j>", "<C-n>")
-m.inoremap("<C-k>", "<C-p>")
+map("i", "<C-j>", "<C-n>")
+map("i", "<C-k>", "<C-p>")
 
 -- map keys for move between splits
-m.nnoremap("<C-j>", "<C-w><C-j>")
-m.nnoremap("<C-k>", "<C-w><C-k>")
-m.nnoremap("<C-l>", "<C-w><C-l>")
-m.nnoremap("<C-h>", "<C-w><C-h>")
-m.tnoremap("<C-j>", "<C-\\><C-n><C-w><C-j>")
-m.tnoremap("<C-k>", "<C-\\><C-n><C-w><C-k>")
-m.tnoremap("<C-l>", "<C-\\><C-n><C-w><C-l>")
-m.tnoremap("<C-h>", "<C-\\><C-n><C-w><C-h>")
-m.map("<leader>m", "<C-w>o", "silent")
+map("n", "<C-j>", "<C-w><C-j>")
+map("n", "<C-k>", "<C-w><C-k>")
+map("n", "<C-l>", "<C-w><C-l>")
+map("n", "<C-h>", "<C-w><C-h>")
+map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>")
+map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>")
+map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>")
+map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>")
+map("", "<leader>m", "<C-w>o", { silent = true })
 
 -- map keys for moving lines up and down
 local Aj = fn.has "macunix" and "∆" or "<A-j>"
 local Ak = fn.has "macunix" and "Ż" or "<A-k>"
-m.nnoremap(Aj, ":m .+1<CR>==", "silent")
-m.nnoremap(Ak, ":m .-2<CR>==", "silent")
-m.vnoremap(Aj, ":m '>+1<CR>gv=gv", "silent")
-m.vnoremap(Ak, ":m '<-2<CR>gv=gv", "silent")
+map("n", Aj, ":m .+1<CR>==", { silent = true })
+map("n", Ak, ":m .-2<CR>==", { silent = true })
+map("v", Aj, ":m '>+1<CR>gv=gv", { silent = true })
+map("v", Ak, ":m '<-2<CR>gv=gv", { silent = true })
 
 -- map keys for yank and paste over system clipboard
-m.nmap("gp", '"+p')
-m.nmap("gP", '"+P')
-m.vmap("gp", '"+p')
-m.vmap("gP", '"+P')
+map("n", "gp", '"+p')
+map("n", "gP", '"+P')
+map("v", "gp", '"+p')
+map("v", "gP", '"+P')
 -- yank
-m.nmap("gy", '"+y')
-m.nmap("gY", '"+Y')
-m.vmap("gy", '"+y')
-m.vmap("gY", '"+Y')
+map("n", "gy", '"+y')
+map("n", "gY", '"+Y')
+map("v", "gy", '"+y')
+map("v", "gY", '"+Y')
 
-m.nnoremap("<leader>nn", ":NvimTreeToggle<CR>", "silent")
-m.nnoremap("<leader>nf", ":NvimTreeFindFile<CR>", "silent")
+map("n", "<leader>nn", ":NvimTreeToggle<CR>", { silent = true })
+map("n", "<leader>nf", ":NvimTreeFindFile<CR>", { silent = true })
 
 function BaseCommit()
   vim.cmd [[
@@ -257,7 +256,7 @@ function ReloadConfig()
   vim.cmd "PackerCompile"
 end
 
-m.nnoremap("<leader>gc", BaseCommit)
+map("n", "<leader>gc", BaseCommit)
 
 vim.cmd [[
 function! ToggleTreeWidth(size)
