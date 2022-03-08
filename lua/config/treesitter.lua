@@ -1,16 +1,7 @@
-require("nvim-treesitter.parsers").get_parser_configs().norg = {
-  install_info = {
-    url = "https://github.com/nvim-neorg/tree-sitter-norg",
-    files = { "src/parser.c", "src/scanner.cc" },
-    branch = "main",
-  },
-}
-
 require("nvim-treesitter.configs").setup {
-  ensure_installed = { "javascript", "typescript", "tsx", "lua", "norg" },
-  highlight = {
-    enable = true,
-  },
+  ensure_installed = { "javascript", "typescript", "tsx", "json", "css", "lua", "norg", "fish", "c", "rust" },
+
+  highlight = { enable = true },
   context_commentstring = {
     enable = true,
   },
