@@ -71,6 +71,7 @@ require("packer").startup(function(use)
     "neovim/nvim-lspconfig",
     requires = {
       "williamboman/nvim-lsp-installer",
+      "simrat39/rust-tools.nvim"
     },
     config = function()
       require "config.lsp"
