@@ -3,6 +3,7 @@ require("lualine").setup {
     theme = "gruvbox",
     component_separators = {},
     section_separators = {},
+    globalstatus = true,
   },
   extensions = { "nvim-tree", "quickfix" },
 }
