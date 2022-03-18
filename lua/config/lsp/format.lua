@@ -8,6 +8,11 @@ local stylua = {
   formatStdin = true,
 }
 
+local rustfmt = {
+  formatCommand = [[rustfmt --emit=stdout --edition=2021]],
+  formatStdin = true,
+}
+
 local js_ts_order = { "eslint", "efm" }
 
 require("lsp-format").setup {
@@ -16,6 +21,7 @@ require("lsp-format").setup {
   javascript = { tab_width = 2, order = js_ts_order },
   javascriptreact = { tab_width = 2, order = js_ts_order },
   lua = { tab_width = 2 },
+  rust = { tab_width = 4 },
 }
 
 require("nvim-lsp-installer").on_server_ready(function(server)
@@ -30,6 +36,7 @@ require("nvim-lsp-installer").on_server_ready(function(server)
           javascript = { prettier },
           javascriptreact = { prettier },
           lua = { stylua },
+          rust = { rustfmt },
         },
       },
     }
