@@ -71,17 +71,10 @@ require("packer").startup(function(use)
     "neovim/nvim-lspconfig",
     requires = {
       "williamboman/nvim-lsp-installer",
-      "simrat39/rust-tools.nvim"
+      "simrat39/rust-tools.nvim",
     },
     config = function()
       require "config.lsp"
-    end,
-  }
-
-  use {
-    "lukas-reineke/lsp-format.nvim",
-    config = function()
-      require "config.lsp.format"
     end,
   }
 
@@ -93,9 +86,10 @@ require("packer").startup(function(use)
   }
 
   use {
-    "L3MON4D3/LuaSnip",
+    "lukas-reineke/lsp-format.nvim",
+    requires = "jose-elias-alvarez/null-ls.nvim",
     config = function()
-      require "config.luasnip"
+      require "config.lsp.format"
     end,
   }
 
@@ -110,6 +104,13 @@ require("packer").startup(function(use)
     },
     config = function()
       require "config.lsp.cmp"
+    end,
+  }
+
+  use {
+    "L3MON4D3/LuaSnip",
+    config = function()
+      require "config.luasnip"
     end,
   }
 
@@ -187,6 +188,13 @@ require("packer").startup(function(use)
     end,
   }
 
+  use {
+    "numToStr/FTerm.nvim",
+    config = function()
+      require "config.fterm"
+    end,
+  }
+
   if packer_bootstrap then
     require("packer").sync()
   end
@@ -260,6 +268,9 @@ end
 map("n", "<leader>gc", BaseCommit)
 
 vim.cmd [[
+command Wqa wa | qa
+cabbrev wqa Wqa
+
 function! ToggleTreeWidth(size)
   if winwidth('%') < a:size
     exe "vertical resize +" . a:size
