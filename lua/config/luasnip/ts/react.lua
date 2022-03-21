@@ -26,18 +26,6 @@ return {
       { i(1), i(0) }
     )
   ),
-  snippet("rdeps", {
-    f(function()
-      for _, v in ipairs(utils.get_diagnostic_for_line "eslint") do
-        if v.user_data.lsp.code == "react-hooks/exhaustive-deps" then
-          local deps = utils.match_to_list(v.message:gsub(". Either.+$", ""):gmatch "'([^']+)'")
-          return table.concat(deps, ", ")
-        end
-      end
-
-      return ""
-    end, {}),
-  }),
   snippet(
     { trig = "(%w+)%.useState", regTrig = true, hidden = true },
     f(function(_, snip)

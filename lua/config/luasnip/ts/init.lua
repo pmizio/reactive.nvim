@@ -4,9 +4,6 @@ local utils = require "config.luasnip.utils"
 local snippet = luasnip.snippet
 local t = luasnip.text_node
 local i = luasnip.insert_node
-local f = luasnip.function_node
-
-local BASE_ESLINT_IGNORE = "// eslint-disable-next-line"
 
 local jsTsSnippets = {
   snippet("arrf", {
@@ -31,24 +28,6 @@ local jsTsSnippets = {
     t { "", "})" },
   }),
   snippet("fln", { utils.file_name(true) }),
-  snippet("esi", {
-    f(function()
-      local errors = utils.get_diagnostic_for_line("eslint", 1)
-
-      if #errors ~= 0 then
-        return BASE_ESLINT_IGNORE
-          .. " "
-          .. table.concat(
-            vim.tbl_map(function(v)
-              return v.user_data.lsp.code
-            end, errors),
-            ", "
-          )
-      end
-
-      return BASE_ESLINT_IGNORE
-    end, {}),
-  }),
 }
 
 vim.list_extend(jsTsSnippets, require "config.luasnip.ts.react")
