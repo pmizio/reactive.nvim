@@ -252,11 +252,14 @@ map("n", "<leader>nn", ":NvimTreeToggle<CR>", { silent = true })
 map("n", "<leader>nf", ":NvimTreeFindFile<CR>", { silent = true })
 
 function BaseCommit()
-  vim.cmd [[
-    let b = substitute(system('git branch --show-current'), '^\(\w\+\/\)\?\([A-Z0-9]\+-\d\+\)-.*$', '\2', 'g')
-    call nvim_buf_set_lines(0, 0, -1, v:false, [ b . " | " ])
-    :startinsert!
-  ]]
+  local b = fn.substitute(
+    fn.system("git branch --show-current"):match "^%s*(.-)%s*$",
+    "^(w+/)?([A-Z0-9]+-d+)-.*$",
+    "\2",
+    "g"
+  )
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { b .. " | " })
+  vim.cmd ":startinsert!"
 end
 
 ReloadConfig = function()
@@ -265,7 +268,6 @@ ReloadConfig = function()
 
   for _, dir in ipairs(lua_dirs) do
     dir = string.gsub(fn.fnamemodify(dir, ":r"), config_prefix, "")
-    P(dir)
     require("plenary.reload").reload_module(dir, true)
     pcall(require, dir)
   end
