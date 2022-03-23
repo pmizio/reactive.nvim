@@ -262,6 +262,8 @@ function BaseCommit()
   vim.cmd ":startinsert!"
 end
 
+map("n", "<leader>gc", BaseCommit)
+
 ReloadConfig = function()
   local config_prefix = fn.fnamemodify(vim.env.MYVIMRC, ":p:h") .. "/lua/"
   local lua_dirs = fn.glob(config_prefix .. "**", 0, 1)
@@ -274,8 +276,6 @@ ReloadConfig = function()
   dofile(vim.env.MYVIMRC)
 end
 
-map("n", "<leader>gc", BaseCommit)
-
 P = function(v)
   print(vim.inspect(v))
   return v
@@ -285,16 +285,9 @@ vim.cmd [[
 command! Wqa wa | qa
 cabbrev wqa Wqa
 
-function! ToggleTreeWidth(size)
-  if winwidth('%') < a:size
-    exe "vertical resize +" . a:size
-  else
-    exe "vertical resize -" . a:size
-  endif
-endfunction
+command! R lua ReloadConfig()<CR>
 
 au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
 au FileType gitcommit au BufEnter <buffer> lua BaseCommit()
 
-command! SoConf lua ReloadConfig()<CR>
 ]]
