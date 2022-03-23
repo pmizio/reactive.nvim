@@ -1,4 +1,5 @@
 local tree_cb = require("nvim-tree.config").nvim_tree_callback
+local u = require "config.utils"
 
 local SIZE = 50
 
@@ -12,11 +13,7 @@ require("nvim-tree").setup {
           key = "A",
           action = "toggle split width",
           action_cb = function()
-            if vim.fn.winwidth "%" < SIZE then
-              vim.cmd("vertical resize +" .. SIZE)
-            else
-              vim.cmd("vertical resize -" .. SIZE)
-            end
+            u.resize_split_by(SIZE, { add = vim.fn.winwidth "%" < SIZE })
           end,
         },
         { key = "s", cb = tree_cb "vsplit" },
