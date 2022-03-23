@@ -1,7 +1,5 @@
 local fterm = require "FTerm"
 
-local SHELL = "/usr/local/bin/fish"
-
 local ADDITIONAL_TERMINALS_BINDINGS = { "j", "k", "l" }
 
 local DIMENSIONS = {
@@ -13,7 +11,7 @@ fterm.setup {}
 
 for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
   local term = fterm:new {
-    cmd = SHELL,
+    cmd = vim.env.SHELL,
     dimensions = DIMENSIONS,
   }
 
