@@ -259,16 +259,28 @@ function BaseCommit()
   ]]
 end
 
-function ReloadConfig()
-  require("plenary.reload").reload_module("config", true)
+ReloadConfig = function()
+  local config_prefix = fn.fnamemodify(vim.env.MYVIMRC, ":p:h") .. "/lua/"
+  local lua_dirs = fn.glob(config_prefix .. "**", 0, 1)
+
+  for _, dir in ipairs(lua_dirs) do
+    dir = string.gsub(fn.fnamemodify(dir, ":r"), config_prefix, "")
+    P(dir)
+    require("plenary.reload").reload_module(dir, true)
+    pcall(require, dir)
+  end
   dofile(vim.env.MYVIMRC)
-  vim.cmd "PackerCompile"
 end
 
 map("n", "<leader>gc", BaseCommit)
 
+P = function(v)
+  print(vim.inspect(v))
+  return v
+end
+
 vim.cmd [[
-command Wqa wa | qa
+command! Wqa wa | qa
 cabbrev wqa Wqa
 
 function! ToggleTreeWidth(size)
