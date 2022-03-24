@@ -137,7 +137,6 @@ require("packer").startup(function(use)
   use {
     "kyazdani42/nvim-tree.lua",
     requires = { "kyazdani42/nvim-web-devicons", opt = true },
-    cmd = { "NvimTreeToggle", "NvimTreeFindFile" },
     config = function()
       require "config.nvimtree"
     end,
@@ -232,8 +231,8 @@ map("n", "<C-h>", "<C-w><C-h>")
 map("", "<leader>m", "<C-w>o", { silent = true })
 
 -- map keys for moving lines up and down
-local Aj = fn.has "macunix" and "∆" or "<A-j>"
-local Ak = fn.has "macunix" and "Ż" or "<A-k>"
+local Aj = fn.has "macunix" == 1 and "∆" or "<A-j>"
+local Ak = fn.has "macunix" == 1 and "Ż" or "<A-k>"
 map("n", Aj, ":m .+1<CR>==", { silent = true })
 map("n", Ak, ":m .-2<CR>==", { silent = true })
 map("v", Aj, ":m '>+1<CR>gv=gv", { silent = true })
@@ -249,9 +248,6 @@ map("n", "gy", '"+y')
 map("n", "gY", '"+Y')
 map("v", "gy", '"+y')
 map("v", "gY", '"+Y')
-
-map("n", "<leader>nn", ":NvimTreeToggle<CR>", { silent = true })
-map("n", "<leader>nf", ":NvimTreeFindFile<CR>", { silent = true })
 
 function BaseCommit()
   local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
@@ -289,5 +285,4 @@ command! R lua ReloadConfig()<CR>
 
 au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
 au FileType gitcommit au BufEnter <buffer> lua BaseCommit()
-
 ]]
