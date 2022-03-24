@@ -60,6 +60,7 @@ require("packer").startup(function(use)
       "JoosepAlviste/nvim-ts-context-commentstring",
       "lukas-reineke/indent-blankline.nvim",
       "nvim-treesitter/nvim-treesitter-textobjects",
+      { "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
       { "ellisonleao/gruvbox.nvim", requires = { "rktjmp/lush.nvim", opt = true } },
     },
     config = function()
