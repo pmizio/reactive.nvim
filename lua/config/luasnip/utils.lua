@@ -39,31 +39,16 @@ function M.file_name(without_spec)
   end, {})
 end
 
-function M.match_to_list(iterator)
-  local ret = {}
-
-  for v in iterator do
-    table.insert(ret, v)
-  end
-
-  return ret
-end
-
-function M.get_diagnostic_for_line(from_server, offset)
-  local ret = {}
-  local currLine = vim.api.nvim_win_get_cursor(0)[1]
-
-  for _, v in ipairs(vim.diagnostic.get()) do
-    if v.lnum + 1 + (offset or 0) * -1 == currLine then
-      if not from_server then
-        table.insert(ret, v)
-      elseif v.source == from_server then
-        table.insert(ret, v)
-      end
+function M.mirror(index, callback)
+  return f(function(args)
+    if callback then
+      return callback(args)
     end
-  end
 
-  return ret
+    return args[1]
+  end, {
+    index,
+  })
 end
 
 return M

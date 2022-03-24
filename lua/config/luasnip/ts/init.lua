@@ -4,29 +4,36 @@ local utils = require "config.luasnip.utils"
 local snippet = luasnip.snippet
 local t = luasnip.text_node
 local i = luasnip.insert_node
+local fmt = require("luasnip.extras.fmt").fmt
 
 local jsTsSnippets = {
-  snippet("arrf", {
-    t { "const " },
-    utils.file_name(),
-    t { " = () => {", utils.indent() },
-    i(0),
-    t { "", "}" },
-  }),
-  snippet("jds", {
-    t "describe('",
-    i(1),
-    t { "', () => {", utils.indent() },
-    i(0),
-    t { "", "})" },
-  }),
-  snippet("jit", {
-    t "it('should ",
-    i(1),
-    t { "', () => {", utils.indent() },
-    i(0),
-    t { "", "})" },
-  }),
+  snippet(
+    "arrf",
+    fmt(
+      [[const {} = () => {{
+        {}
+      }}]],
+      { utils.file_name(), i(1) }
+    )
+  ),
+  snippet(
+    "jds",
+    fmt(
+      [[describe('{}', () => {{
+        {}
+      }})]],
+      { i(1), i(0) }
+    )
+  ),
+  snippet(
+    "jit",
+    fmt(
+      [[it('should {}', () => {{
+        {}
+      }})]],
+      { i(1), i(0) }
+    )
+  ),
   snippet("fln", { utils.file_name(true) }),
 }
 

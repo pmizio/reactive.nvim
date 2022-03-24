@@ -195,6 +195,12 @@ require("packer").startup(function(use)
     end,
   }
 
+  use {
+    "folke/todo-comments.nvim",
+    config = function()
+      require("todo-comments").setup {}
+    end,
+  }
   if packer_bootstrap then
     require("packer").sync()
   end
@@ -223,10 +229,6 @@ map("n", "<C-j>", "<C-w><C-j>")
 map("n", "<C-k>", "<C-w><C-k>")
 map("n", "<C-l>", "<C-w><C-l>")
 map("n", "<C-h>", "<C-w><C-h>")
-map("t", "<C-j>", "<C-\\><C-n><C-w><C-j>")
-map("t", "<C-k>", "<C-\\><C-n><C-w><C-k>")
-map("t", "<C-l>", "<C-\\><C-n><C-w><C-l>")
-map("t", "<C-h>", "<C-\\><C-n><C-w><C-h>")
 map("", "<leader>m", "<C-w>o", { silent = true })
 
 -- map keys for moving lines up and down
@@ -252,14 +254,12 @@ map("n", "<leader>nn", ":NvimTreeToggle<CR>", { silent = true })
 map("n", "<leader>nf", ":NvimTreeFindFile<CR>", { silent = true })
 
 function BaseCommit()
-  local b = fn.substitute(
-    fn.system("git branch --show-current"):match "^%s*(.-)%s*$",
-    "^(w+/)?([A-Z0-9]+-d+)-.*$",
-    "\2",
-    "g"
-  )
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, { b .. " | " })
-  vim.cmd ":startinsert!"
+  local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
+
+  if branch then
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { branch .. " | " })
+    vim.cmd ":startinsert!"
+  end
 end
 
 map("n", "<leader>gc", BaseCommit)
