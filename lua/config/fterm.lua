@@ -19,25 +19,23 @@ for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
     dimensions = DIMENSIONS,
   }
 
-  local function toggle(key)
-    return function()
-      local closed_term = false
+  local function toggle()
+    local closed_term = false
 
-      for k, t in pairs(terminals) do
-        if ftutils.is_win_valid(t.win) then
-          t:close()
-          closed_term = k
-        end
+    for k, t in pairs(terminals) do
+      if ftutils.is_win_valid(t.win) then
+        t:close()
+        closed_term = k
       end
+    end
 
-      if closed_term ~= key then
-        term:toggle()
-      end
+    if closed_term ~= binding then
+      term:open()
     end
   end
 
-  vim.keymap.set("n", "<leader>t" .. binding, toggle(binding))
-  vim.keymap.set("t", "<leader>t" .. binding, toggle(binding))
+  vim.keymap.set("n", "<leader>t" .. binding, toggle)
+  vim.keymap.set("t", "<leader>t" .. binding, toggle)
 
   terminals[binding] = term
 end
