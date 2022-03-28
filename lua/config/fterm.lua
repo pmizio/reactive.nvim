@@ -21,16 +21,16 @@ for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
 
   local function toggle(key)
     return function()
-      local close_executed = false
+      local closed_term = false
 
       for k, t in pairs(terminals) do
         if ftutils.is_win_valid(t.win) then
           t:close()
-          close_executed = key == k
+          closed_term = k
         end
       end
 
-      if not close_executed then
+      if closed_term ~= key then
         term:toggle()
       end
     end
