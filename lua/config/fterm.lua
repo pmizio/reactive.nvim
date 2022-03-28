@@ -1,4 +1,5 @@
 local fterm = require "FTerm"
+local ftutils = require "FTerm.utils"
 
 local ADDITIONAL_TERMINALS_BINDINGS = { "j", "k", "l" }
 
@@ -10,18 +11,35 @@ local DIMENSIONS = {
 
 fterm.setup {}
 
+local terminals = {}
+
 for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
   local term = fterm:new {
     cmd = vim.env.SHELL,
     dimensions = DIMENSIONS,
   }
 
-  local function toggle()
-    term:toggle()
+  local function toggle(key)
+    return function()
+      local close_executed = false
+
+      for k, t in pairs(terminals) do
+        if ftutils.is_win_valid(t.win) then
+          t:close()
+          close_executed = key == k
+        end
+      end
+
+      if not close_executed then
+        term:toggle()
+      end
+    end
   end
 
-  vim.keymap.set("n", "<leader>t" .. binding, toggle)
-  vim.keymap.set("t", "<leader>t" .. binding, toggle)
+  vim.keymap.set("n", "<leader>t" .. binding, toggle(binding))
+  vim.keymap.set("t", "<leader>t" .. binding, toggle(binding))
+
+  terminals[binding] = term
 end
 
 vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
