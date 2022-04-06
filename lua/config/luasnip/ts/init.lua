@@ -2,7 +2,6 @@ local luasnip = require "luasnip"
 local utils = require "config.luasnip.utils"
 
 local snippet = luasnip.snippet
-local t = luasnip.text_node
 local i = luasnip.insert_node
 local fmt = require("luasnip.extras.fmt").fmt
 
@@ -10,27 +9,33 @@ local jsTsSnippets = {
   snippet(
     "arrf",
     fmt(
-      [[const {} = () => {{
+      [[
+      const {} = () => {{
         {}
-      }}]],
+      }}
+      ]],
       { utils.file_name(), i(1) }
     )
   ),
   snippet(
     "jds",
     fmt(
-      [[describe('{}', () => {{
+      [[
+      describe('{}', () => {{
         {}
-      }})]],
+      }})
+      ]],
       { i(1), i(0) }
     )
   ),
   snippet(
     "jit",
     fmt(
-      [[it('should {}', () => {{
+      [[
+      it('should {}', () => {{
         {}
-      }})]],
+      }})
+      ]],
       { i(1), i(0) }
     )
   ),
@@ -44,5 +49,6 @@ for _, suffix in pairs { "log", "dir", "error" } do
 end
 
 for _, ft in pairs { "javascript", "javascriptreact", "typescript", "typescriptreact" } do
-  luasnip.snippets[ft] = jsTsSnippets
+  -- luasnip.snippets[ft] = jsTsSnippets
+  luasnip.add_snippets(ft, jsTsSnippets)
 end

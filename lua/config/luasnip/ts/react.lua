@@ -9,27 +9,31 @@ return {
   snippet(
     "rfc",
     fmt(
-      [[import React from 'react';
+      [[
+      import React from 'react';
       
       const {} = () => {{
         {}
-      }}]],
+      }}
+      ]],
       { utils.file_name(), i(1) }
     )
   ),
   snippet(
     "eff",
     fmt(
-      [[useEffect(() => {{
+      [[
+      useEffect(() => {{
         {}
-      }}, [{}])]],
+      }}, [{}])
+      ]],
       { i(1), i(0) }
     )
   ),
   snippet(
     "useState",
     fmt(
-      [[const [{}, set{}] = useState()]],
+      "const [{}, set{}] = useState()",
       { i(1), utils.mirror(1, function(args)
         return args[1][1]:gsub("^%l", string.upper)
       end) }
