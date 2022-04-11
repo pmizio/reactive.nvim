@@ -95,3 +95,8 @@ require("nvim-lsp-installer").on_server_ready(function(server)
   vim.cmd "do User LspAttachBuffers"
   require "config.lsp.diagnostics"
 end)
+
+require("lsp_signature").setup {
+  floating_window = false,
+  hint_prefix = "🅰️ ",
+}

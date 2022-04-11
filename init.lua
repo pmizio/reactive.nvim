@@ -72,6 +72,7 @@ require("packer").startup(function(use)
     "neovim/nvim-lspconfig",
     requires = {
       "williamboman/nvim-lsp-installer",
+      "ray-x/lsp_signature.nvim",
       "simrat39/rust-tools.nvim",
     },
     config = function()
@@ -170,7 +171,17 @@ require("packer").startup(function(use)
     end,
   }
 
+  use "tpope/vim-surround"
+
+  use {
+    "gbprod/substitute.nvim",
+    config = function()
+      require "config.substitute"
+    end,
+  }
+
   use "tpope/vim-repeat"
+
   use "troydm/zoomwintab.vim"
   use {
     "nvim-neorg/neorg",
@@ -180,7 +191,6 @@ require("packer").startup(function(use)
     end,
   }
 
-  use "ggandor/lightspeed.nvim"
   use {
     "stevearc/dressing.nvim",
     config = function()
