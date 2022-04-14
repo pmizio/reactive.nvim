@@ -97,6 +97,6 @@ require("nvim-lsp-installer").on_server_ready(function(server)
 end)
 
 require("lsp_signature").setup {
-  floating_window = false,
-  hint_prefix = "🅰️ ",
+  floating_window = true,
+  hint_enable = false,
 }
