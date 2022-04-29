@@ -230,10 +230,6 @@ map("t", "kj", "<C-\\><C-n>", { silent = true })
 -- disable ex mode
 map("", "Q", "<NOP>")
 
--- map keys for move over code completion
-map("i", "<C-j>", "<C-n>")
-map("i", "<C-k>", "<C-p>")
-
 -- map keys for move between splits
 map("n", "<C-j>", "<C-w><C-j>")
 map("n", "<C-k>", "<C-w><C-k>")
@@ -287,6 +283,13 @@ P = function(v)
   print(vim.inspect(v))
   return v
 end
+
+RL = function(module)
+  require("plenary.reload").reload_module(module)
+  return require(module)
+end
+
+pcall(require, "config.scratchpad")
 
 vim.cmd [[
 command! Wqa wa | qa

@@ -1,5 +1,18 @@
 require("nvim-treesitter.configs").setup {
-  ensure_installed = { "javascript", "typescript", "tsx", "json", "css", "lua", "norg", "fish", "c", "rust" },
+  ensure_installed = {
+    "javascript",
+    "typescript",
+    "tsx",
+    "json",
+    "css",
+    "lua",
+    "norg",
+    "fish",
+    "c",
+    "rust",
+    "query",
+    "vim",
+  },
 
   highlight = { enable = true },
   context_commentstring = {
@@ -37,5 +50,13 @@ require("nvim-treesitter.configs").setup {
         ["ic"] = "@class.inner",
       },
     },
+  },
+  playground = {
+    enable = true,
+  },
+  query_linter = {
+    enable = true,
+    use_virtual_text = true,
+    lint_events = { "BufWrite", "CursorHold" },
   },
 }

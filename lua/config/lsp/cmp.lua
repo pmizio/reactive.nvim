@@ -8,7 +8,7 @@ cmp.setup {
     end,
   },
   preselect = cmp.PreselectMode.None,
-  mapping = {
+  mapping = cmp.mapping.preset.insert {
     ["<C-j>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
     ["<C-k>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
     ["<C-y>"] = cmp.mapping(function(fallback)
@@ -29,9 +29,9 @@ cmp.setup {
     ["<C-Space>"] = cmp.mapping.complete(),
   },
   sources = {
-    { name = "nvim_lsp" },
-    { name = "nvim_lua" },
-    { name = "luasnip" },
+    { name = "nvim_lsp", priority = 3 },
+    { name = "nvim_lua", priority = 3 },
+    { name = "luasnip", priority = 2 },
     {
       name = "buffer",
       option = {
@@ -43,8 +43,9 @@ cmp.setup {
           return vim.tbl_keys(bufs)
         end,
       },
+      priority = 1,
     },
-    { name = "path" },
+    { name = "path", priority = 1 },
   },
   experimental = {
     ghost_text = true,

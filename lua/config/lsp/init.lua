@@ -1,3 +1,5 @@
+local lspconfig = require "lspconfig"
+local lspinstaller = require "nvim-lsp-installer"
 local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
 
@@ -78,8 +80,10 @@ local settings = {
   },
 }
 
-require("nvim-lsp-installer").on_server_ready(function(server)
-  server:setup(vim.tbl_extend("force", {
+lspinstaller.setup {}
+
+for _, server in pairs(lspinstaller.get_installed_servers()) do
+  lspconfig[server.name].setup(vim.tbl_extend("force", {
     autostart = true,
     capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     on_attach = function(client, bufnr)
@@ -92,9 +96,9 @@ require("nvim-lsp-installer").on_server_ready(function(server)
     end,
     handlers = handlers,
   }, settings[server.name] or {}))
-  vim.cmd "do User LspAttachBuffers"
-  require "config.lsp.diagnostics"
-end)
+end
+
+require "config.lsp.diagnostics"
 
 require("lsp_signature").setup {
   floating_window = true,
