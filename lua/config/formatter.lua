@@ -43,5 +43,3 @@ end
 require("formatter").setup {
   filetype = mapFormatters(),
 }
-
-vim.cmd "au User FormatterPost lua vim.lsp.buf.formatting_sync()"

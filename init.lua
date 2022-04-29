@@ -2,6 +2,7 @@ local set = vim.opt
 local g = vim.g
 local fn = vim.fn
 local map = vim.keymap.set
+local one_au = require("config.utils").create_onetime_autocmd
 
 vim.cmd "filetype indent off"
 set.number = true
@@ -27,6 +28,8 @@ set.termguicolors = true
 set.pumheight = 10
 
 g.mapleader = " "
+
+vim.cmd "cabbrev wqa Wqa"
 
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
@@ -259,18 +262,7 @@ map({ "n", "v" }, "gP", '"+P')
 map({ "n", "v" }, "gy", '"+y')
 map({ "n", "v" }, "gY", '"+Y')
 
-function BaseCommit()
-  local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
-
-  if branch then
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, { branch .. " | " })
-    vim.cmd ":startinsert!"
-  end
-end
-
-map("n", "<leader>gc", BaseCommit)
-
-ReloadConfig = function()
+function ReloadConfig()
   local config_prefix = fn.fnamemodify(vim.env.MYVIMRC, ":p:h") .. "/lua/"
   local lua_dirs = fn.glob(config_prefix .. "**", 0, 1)
 
@@ -282,12 +274,12 @@ ReloadConfig = function()
   dofile(vim.env.MYVIMRC)
 end
 
-P = function(v)
+function P(v)
   print(vim.inspect(v))
   return v
 end
 
-RL = function(module)
+function RL(module)
   require("plenary.reload").reload_module(module)
   return require(module)
 end
@@ -295,11 +287,22 @@ end
 vim.api.nvim_create_user_command("Wqa", "wa | qa", { force = true })
 vim.api.nvim_create_user_command("R", ReloadConfig, { force = true })
 
-vim.cmd [[
-cabbrev wqa Wqa
+one_au("TextYankPost", {
+  callback = function()
+    vim.highlight.on_yank { higroup = "IncSearch", timeout = 200 }
+  end,
+})
 
-au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
-au FileType gitcommit au BufEnter <buffer> lua BaseCommit()
-]]
+one_au("FileType", {
+  callback = function()
+    local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
+
+    if branch then
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, { branch .. " | " })
+      vim.cmd ":startinsert!"
+    end
+  end,
+  pattern = "gitcommit",
+})
 
 pcall(require, "config.scratchpad")

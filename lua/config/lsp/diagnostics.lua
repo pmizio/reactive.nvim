@@ -37,13 +37,14 @@ end
 
 local last_popup_cursor = { nil, nil }
 
-function LspDiagnosticsPopupHandler()
-  local current_cursor = vim.api.nvim_win_get_cursor(0)
+require("config.utils").create_onetime_autocmd("CursorHold", {
+  pattern = "*",
+  callback = function()
+    local current_cursor = vim.api.nvim_win_get_cursor(0)
 
-  if not (current_cursor[1] == last_popup_cursor[1] and current_cursor[2] == last_popup_cursor[2]) then
-    last_popup_cursor = current_cursor
-    vim.diagnostic.open_float(0, { scope = "cursor" })
-  end
-end
-
-vim.cmd "au CursorHold * lua LspDiagnosticsPopupHandler()"
+    if not (current_cursor[1] == last_popup_cursor[1] and current_cursor[2] == last_popup_cursor[2]) then
+      last_popup_cursor = current_cursor
+      vim.diagnostic.open_float(0, { scope = "cursor" })
+    end
+  end,
+})
