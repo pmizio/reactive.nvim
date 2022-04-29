@@ -292,14 +292,14 @@ RL = function(module)
   return require(module)
 end
 
-pcall(require, "config.scratchpad")
+vim.api.nvim_create_user_command("Wqa", "wa | qa", { force = true })
+vim.api.nvim_create_user_command("R", ReloadConfig, { force = true })
 
 vim.cmd [[
-command! Wqa wa | qa
 cabbrev wqa Wqa
-
-command! R lua ReloadConfig()<CR>
 
 au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
 au FileType gitcommit au BufEnter <buffer> lua BaseCommit()
 ]]
+
+pcall(require, "config.scratchpad")

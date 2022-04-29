@@ -17,4 +17,4 @@ map("n", "<leader>h", function()
   ui.nav_file(4)
 end)
 
-vim.cmd "command! Harpoon lua require('harpoon.ui').toggle_quick_menu()"
+vim.api.nvim_create_user_command("Harpoon", ui.toggle_quick_menu, { force = true })
