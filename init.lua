@@ -100,6 +100,8 @@ require("packer").startup(function(use)
     requires = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-cmdline",
+      "hrsh7th/cmp-path",
       "hrsh7th/cmp-nvim-lua",
       "saadparwaiz1/cmp_luasnip",
       "onsails/lspkind-nvim",
@@ -230,6 +232,10 @@ map("t", "kj", "<C-\\><C-n>", { silent = true })
 -- disable ex mode
 map("", "Q", "<NOP>")
 
+-- autocomplete remappings
+map({ "i", "c" }, "<C-j>", "<C-n>", { remap = true })
+map({ "i", "c" }, "<C-k>", "<C-p>", { remap = true })
+
 -- map keys for move between splits
 map("n", "<C-j>", "<C-w><C-j>")
 map("n", "<C-k>", "<C-w><C-k>")
@@ -246,15 +252,12 @@ map("v", Aj, ":m '>+1<CR>gv=gv", { silent = true })
 map("v", Ak, ":m '<-2<CR>gv=gv", { silent = true })
 
 -- map keys for yank and paste over system clipboard
-map("n", "gp", '"+p')
-map("n", "gP", '"+P')
-map("v", "gp", '"+p')
-map("v", "gP", '"+P')
+map({ "n", "v" }, "gp", '"+p')
+map({ "n", "v" }, "gP", '"+P')
+
 -- yank
-map("n", "gy", '"+y')
-map("n", "gY", '"+Y')
-map("v", "gy", '"+y')
-map("v", "gY", '"+Y')
+map({ "n", "v" }, "gy", '"+y')
+map({ "n", "v" }, "gY", '"+Y')
 
 function BaseCommit()
   local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
