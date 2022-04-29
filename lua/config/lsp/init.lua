@@ -3,6 +3,16 @@ local lspinstaller = require "nvim-lsp-installer"
 local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
 
+local ensure_installed = {
+  "cssls",
+  "eslint",
+  "html",
+  "jsonls",
+  "sumneko_lua",
+  "tsserver",
+  "rust_analyzer",
+}
+
 local function on_attach(client, bufnr)
   client.resolved_capabilities.document_range_formatting = false
   local function buf_set_option(...)
@@ -80,7 +90,10 @@ local settings = {
   },
 }
 
-lspinstaller.setup {}
+lspinstaller.setup {
+  ensure_installed = ensure_installed,
+  automatic_installation = true,
+}
 
 for _, server in pairs(lspinstaller.get_installed_servers()) do
   lspconfig[server.name].setup(vim.tbl_extend("force", {
