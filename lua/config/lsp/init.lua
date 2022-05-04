@@ -4,17 +4,17 @@ local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
 
 local ensure_installed = {
-  "cssls",
+  "tsserver",
   "eslint",
   "html",
   "jsonls",
   "sumneko_lua",
-  "tsserver",
   "rust_analyzer",
+  "clangd",
 }
 
 local function on_attach(client, bufnr)
-  client.resolved_capabilities.document_range_formatting = false
+  client.server_capabilities.document_range_formatting = false
   local function buf_set_option(...)
     vim.api.nvim_buf_set_option(bufnr, ...)
   end
@@ -101,7 +101,7 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
     capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     on_attach = function(client, bufnr)
       if server.name == "eslint" then
-        client.resolved_capabilities.document_formatting = true
+        client.server_capabilities.document_formatting = true
         require("lsp-format").on_attach(client)
       else
         on_attach(client, bufnr)
