@@ -14,7 +14,7 @@ local ensure_installed = {
 }
 
 local function on_attach(client, bufnr)
-  client.server_capabilities.document_range_formatting = false
+  client.server_capabilities.documentRangeFormattingProvider = false
   local function buf_set_option(...)
     vim.api.nvim_buf_set_option(bufnr, ...)
   end
@@ -101,7 +101,8 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
     capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
     on_attach = function(client, bufnr)
       if server.name == "eslint" then
-        client.server_capabilities.document_formatting = true
+        client.server_capabilities.documentFormattingProvider = true
+        client.server_capabilities.renameProvider = false
         require("lsp-format").on_attach(client)
       else
         on_attach(client, bufnr)
