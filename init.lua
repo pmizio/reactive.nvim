@@ -93,6 +93,7 @@ require("packer").startup(function(use)
   use {
     "lukas-reineke/lsp-format.nvim",
     requires = "jose-elias-alvarez/null-ls.nvim",
+    event = "BufEnter",
     config = function()
       require "config.lsp.format"
     end,

@@ -1,13 +1,19 @@
 local lsp_format = require "lsp-format"
 local null_ls = require "null-ls"
+local utils = require "config.lsp.utils"
 
-local TS_ORDER = { "eslint", "null-ls" }
+local JS_TS_SETTINGS = {
+  tab_width = 2,
+  order = { "eslint", "null-ls" },
+  -- disable prettier formatting when prettier is not present @ project
+  exclude = utils.has_prettier_config() and {} or { "null-ls" },
+}
 
 lsp_format.setup {
-  typescript = { tab_width = 2, order = TS_ORDER },
-  typescriptreact = { tab_width = 2, order = TS_ORDER },
-  javascript = { tab_width = 2, order = TS_ORDER },
-  javascriptreact = { tab_width = 2, order = TS_ORDER },
+  typescript = JS_TS_SETTINGS,
+  typescriptreact = JS_TS_SETTINGS,
+  javascript = JS_TS_SETTINGS,
+  javascriptreact = JS_TS_SETTINGS,
   lua = { tab_width = 2 },
   rust = { tab_width = 4 },
 }
