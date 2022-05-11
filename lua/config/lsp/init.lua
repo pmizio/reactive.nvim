@@ -35,7 +35,6 @@ local function on_attach(client, bufnr)
   lsp_map("gh", vim.lsp.buf.hover)
   lsp_map("gv", "<cmd>vs | lua vim.lsp.buf.definition()<CR>")
   lsp_map("gi", vim.lsp.buf.implementation)
-  lsp_map("gs", vim.lsp.buf.signature_help)
   lsp_map("<space>D", vim.lsp.buf.type_definition)
   lsp_map("<space>rr", vim.lsp.buf.rename)
   lsp_map("<space>ca", vim.lsp.buf.code_action)
@@ -47,10 +46,6 @@ local function on_attach(client, bufnr)
 end
 
 local handlers = {
-  ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-    border = "single",
-    focusable = false,
-  }),
   ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
     border = "single",
   }),
@@ -112,9 +107,9 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
   }, settings[server.name] or {}))
 end
 
-require "config.lsp.diagnostics"
-
 require("lsp_signature").setup {
   floating_window = true,
   hint_enable = false,
 }
+
+require "config.lsp.diagnostics"
