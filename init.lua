@@ -217,6 +217,14 @@ require("packer").startup(function(use)
       require("todo-comments").setup {}
     end,
   }
+
+  use {
+    "unblevable/quick-scope",
+    config = function()
+      require "config.quickScope"
+    end,
+  }
+
   if packer_bootstrap then
     require("packer").sync()
   end
@@ -295,6 +303,7 @@ one_au("TextYankPost", {
 })
 
 one_au("FileType", {
+  pattern = "gitcommit",
   callback = function()
     local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
 
@@ -303,7 +312,6 @@ one_au("FileType", {
       vim.cmd ":startinsert!"
     end
   end,
-  pattern = "gitcommit",
 })
 
 pcall(require, "config.scratchpad")
