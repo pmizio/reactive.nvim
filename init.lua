@@ -227,8 +227,8 @@ require("packer").startup(function(use)
   use {
     "luisiacc/gruvbox-baby",
     config = function()
-      vim.g.gruvbox_baby_keyword_style = "italic"
-      vim.g.gruvbox_baby_telescope_theme = 1
+      require "config.gruvbox"
+
       vim.cmd "colorscheme gruvbox-baby"
     end,
   }
