@@ -65,7 +65,6 @@ require("packer").startup(function(use)
       "lukas-reineke/indent-blankline.nvim",
       "nvim-treesitter/nvim-treesitter-textobjects",
       { "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
-      { "ellisonleao/gruvbox.nvim", requires = { "rktjmp/lush.nvim", opt = true } },
     },
     config = function()
       require "config.treesitter"
@@ -226,12 +225,19 @@ require("packer").startup(function(use)
     end,
   }
 
+  use {
+    "luisiacc/gruvbox-baby",
+    config = function()
+      vim.g.gruvbox_baby_keyword_style = "italic"
+      vim.g.gruvbox_baby_telescope_theme = 1
+      vim.cmd "colorscheme gruvbox-baby"
+    end,
+  }
+
   if packer_bootstrap then
     require("packer").sync()
   end
 end)
-
-vim.cmd "colorscheme gruvbox"
 
 map("n", "<ESC>", ":nohl <ESC>", { silent = true })
 
