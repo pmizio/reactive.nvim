@@ -12,6 +12,7 @@ require("nvim-treesitter.configs").setup {
     "rust",
     "query",
     "vim",
+    "go",
   },
 
   highlight = { enable = true },
