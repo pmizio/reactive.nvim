@@ -16,6 +16,7 @@ lsp_format.setup {
   javascriptreact = JS_TS_SETTINGS,
   lua = { tab_width = 2 },
   rust = { tab_width = 4 },
+  go = { tab_width = 4 },
 }
 
 null_ls.setup {
@@ -24,5 +25,6 @@ null_ls.setup {
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.formatting.prettierd,
     null_ls.builtins.formatting.rustfmt,
+    null_ls.builtins.formatting.gofmt,
   },
 }
