@@ -107,6 +107,8 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
   }, settings[server.name] or {}))
 end
 
+require("rust-tools").setup {}
+
 require("lsp_signature").setup {
   floating_window = true,
   hint_enable = false,
