@@ -26,6 +26,7 @@ set.splitright = true
 set.cursorline = true
 set.termguicolors = true
 set.pumheight = 10
+set.diffopt:append "vertical"
 
 g.mapleader = " "
 
@@ -168,7 +169,9 @@ require("packer").startup(function(use)
 
   use {
     "tpope/vim-fugitive",
-    cmd = { "G" },
+    config = function()
+      require "config.fugitive"
+    end,
   }
   use {
     "lewis6991/gitsigns.nvim",
