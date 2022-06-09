@@ -118,4 +118,7 @@ require "config.lsp.diagnostics"
 
 require("rust-tools").setup {}
 
-pcall(require, "config.lsp.test")
+-- local ok, test = pcall(require, "config.lsp.test")
+-- if ok then
+--   test(on_attach)
+-- end

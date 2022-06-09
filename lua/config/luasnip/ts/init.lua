@@ -17,6 +17,7 @@ local jsTsSnippets = {
       { utils.file_name(), i(1) }
     )
   ),
+  snippet("cst", fmt("const {} = {};", { i(1), i(2) })),
   snippet(
     "jds",
     fmt(
