@@ -191,7 +191,12 @@ require("packer").startup(function(use)
 
   use "tpope/vim-repeat"
 
-  use "troydm/zoomwintab.vim"
+  use {
+    "Pocco81/TrueZen.nvim",
+    config = function()
+      require "config.trueZen"
+    end,
+  }
   use {
     "nvim-neorg/neorg",
     ft = "norg",
@@ -236,6 +241,12 @@ require("packer").startup(function(use)
       vim.cmd "colorscheme gruvbox-baby"
     end,
   }
+  use {
+    "takac/vim-hardtime",
+    config = function()
+      require "config.hardTime"
+    end,
+  }
 
   if packer_bootstrap then
     require("packer").sync()
@@ -263,7 +274,6 @@ map("n", "<C-j>", "<C-w><C-j>")
 map("n", "<C-k>", "<C-w><C-k>")
 map("n", "<C-l>", "<C-w><C-l>")
 map("n", "<C-h>", "<C-w><C-h>")
-map("", "<leader>m", "<C-w>o", { silent = true })
 
 -- map keys for moving lines up and down
 local Aj = fn.has "macunix" == 1 and "∆" or "<A-j>"
@@ -309,23 +319,6 @@ vim.api.nvim_create_user_command("R", ReloadConfig, { force = true })
 one_au("TextYankPost", {
   callback = function()
     vim.highlight.on_yank { higroup = "IncSearch", timeout = 200 }
-  end,
-})
-
-one_au("FileType", {
-  pattern = "gitcommit",
-  callback = function()
-    local branch = fn.system("git branch --show-current"):match "/?([%u%d]+-%d+)-?"
-    local content = vim.api.nvim_buf_get_lines(0, 0, -1, false)[1]
-
-    if branch and content:find "^Merge branch" == nil then
-      return
-    end
-
-    if branch then
-      vim.api.nvim_buf_set_lines(0, 0, -1, false, { branch .. " | " })
-      vim.cmd ":startinsert!"
-    end
   end,
 })
 

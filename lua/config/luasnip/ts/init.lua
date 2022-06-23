@@ -3,9 +3,21 @@ local utils = require "config.luasnip.utils"
 
 local snippet = luasnip.snippet
 local i = luasnip.insert_node
+local f = luasnip.function_node
 local fmt = require("luasnip.extras.fmt").fmt
 
 local jsTsSnippets = {
+  utils.var_snip("c", "const"),
+  utils.var_snip("l", "let"),
+  snippet(
+    { trig = "([%w.%[%]'\"?]+)%.c", regTrig = true, hidden = true },
+    fmt("const {} = {}", {
+      i(0),
+      f(function(_, snip)
+        return snip.captures[1]
+      end, {}),
+    })
+  ),
   snippet(
     "arrf",
     fmt(

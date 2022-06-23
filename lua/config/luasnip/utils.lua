@@ -2,7 +2,9 @@ local fn = vim.fn
 
 local luasnip = require "luasnip"
 local snippet = luasnip.snippet
+local i = luasnip.insert_node
 local f = luasnip.function_node
+local fmt = require("luasnip.extras.fmt").fmt
 
 local M = {}
 
@@ -25,6 +27,18 @@ function M.print_snip(suffix, fn_name)
       end, {})
     ),
   }
+end
+
+function M.var_snip(abbr, keyword)
+  return snippet(
+    { trig = "([%w.%[%]'\"?]+)%." .. abbr, regTrig = true, hidden = true },
+    fmt(keyword .. " {} = {}", {
+      i(0),
+      f(function(_, snip)
+        return snip.captures[1]
+      end, {}),
+    })
+  )
 end
 
 function M.file_name(without_spec)
