@@ -1,11 +1,10 @@
 local fn = vim.fn
 local map = vim.keymap.set
-local one_au = require("config.utils").create_onetime_autocmd
 
 require "config.options"
 require "config.commands"
 
-require "config.neovide"
+pcall(require, "config.neovide")
 
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
