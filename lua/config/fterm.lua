@@ -1,3 +1,4 @@
+local fn = vim.fn
 local fterm = require "FTerm"
 local ftutils = require "FTerm.utils"
 
@@ -13,9 +14,17 @@ fterm.setup {}
 
 local terminals = {}
 
+local function get_shell()
+  if fn.has "macunix" or fn.has "unix" then
+    return "/usr/local/bin/fish --login"
+  end
+
+  return vim.env.SHELL
+end
+
 for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
   local term = fterm:new {
-    cmd = vim.env.SHELL,
+    cmd = get_shell(),
     dimensions = DIMENSIONS,
   }
 

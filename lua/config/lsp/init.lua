@@ -15,11 +15,8 @@ local ensure_installed = {
 
 local function on_attach(client, bufnr)
   client.server_capabilities.documentRangeFormattingProvider = false
-  local function buf_set_option(...)
-    vim.api.nvim_buf_set_option(bufnr, ...)
-  end
 
-  buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
   local function lsp_map(lhs, rhs)
     vim.keymap.set("n", lhs, rhs, {
@@ -54,38 +51,46 @@ local handlers = {
 }
 
 local settings = {
+  ["rust_analyzer"] = {
+    ["rust-analyzer"] = {
+      checkOnSave = {
+        command = "clippy",
+      },
+    },
+  },
   ["sumneko_lua"] = {
-    settings = {
-      Lua = {
-        runtime = {
-          version = "LuaJIT",
-        },
-        completion = {
-          -- You should use real snippets
-          keywordSnippet = "Disable",
-        },
-        diagnostics = {
-          enable = true,
-          disable = { "trailing-space" },
-          globals = {
-            -- Neovim
-            "vim",
-            -- Busted
-            "describe",
-            "it",
-            "before_each",
-            "after_each",
-            "teardown",
-            "pending",
-            "clear",
-          },
+    Lua = {
+      runtime = {
+        version = "LuaJIT",
+        path = vim.split(package.path, ";"),
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      completion = {
+        keywordSnippet = "Disable",
+      },
+      diagnostics = {
+        enable = true,
+        disable = { "trailing-space" },
+        globals = {
+          -- Neovim
+          "vim",
+          -- Busted
+          "describe",
+          "it",
+          "before_each",
+          "after_each",
+          "teardown",
+          "pending",
+          "clear",
         },
       },
     },
-    -- Runtime configurations
-    filetypes = { "lua" },
   },
 }
+
+require("rust-tools").setup {}
 
 lspinstaller.setup {
   ensure_installed = ensure_installed,
@@ -106,7 +111,9 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
       end
     end,
     handlers = handlers,
-  }, settings[server.name] or {}))
+  }, {
+    settings = settings[server.name] or {},
+  }))
 end
 
 require("lsp_signature").setup {
@@ -115,8 +122,6 @@ require("lsp_signature").setup {
 }
 
 require "config.lsp.diagnostics"
-
-require("rust-tools").setup {}
 
 -- local ok, test = pcall(require, "config.lsp.test")
 -- if ok then
