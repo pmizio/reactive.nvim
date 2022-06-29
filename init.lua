@@ -1,8 +1,8 @@
 local fn = vim.fn
-local map = vim.keymap.set
 
 require "config.options"
 require "config.commands"
+require "config.mappings"
 
 pcall(require, "config.neovide")
 
@@ -231,44 +231,6 @@ require("packer").startup(function(use)
     require("packer").sync()
   end
 end)
-
-map("n", "<ESC>", ":nohl <ESC>", { silent = true })
-
--- map jk and kj to esc
-map("i", "<ESC>", "<NOP>")
-map("i", "jk", "<C-o>:nohl<CR><ESC>", { silent = true })
-map("i", "kj", "<C-o>:nohl<CR><ESC>", { silent = true })
-map("t", "jk", "<C-\\><C-n>", { silent = true })
-map("t", "kj", "<C-\\><C-n>", { silent = true })
-
--- disable ex mode
-map("", "Q", "<NOP>")
-
--- autocomplete remappings
-map({ "i", "c" }, "<C-j>", "<C-n>", { remap = true })
-map({ "i", "c" }, "<C-k>", "<C-p>", { remap = true })
-
--- map keys for move between splits
-map("n", "<C-j>", "<C-w><C-j>")
-map("n", "<C-k>", "<C-w><C-k>")
-map("n", "<C-l>", "<C-w><C-l>")
-map("n", "<C-h>", "<C-w><C-h>")
-
--- map keys for moving lines up and down
-local Aj = fn.has "macunix" == 1 and "∆" or "<A-j>"
-local Ak = fn.has "macunix" == 1 and "Ż" or "<A-k>"
-map("n", Aj, ":m .+1<CR>==", { silent = true })
-map("n", Ak, ":m .-2<CR>==", { silent = true })
-map("v", Aj, ":m '>+1<CR>gv=gv", { silent = true })
-map("v", Ak, ":m '<-2<CR>gv=gv", { silent = true })
-
--- map keys for yank and paste over system clipboard
-map({ "n", "v" }, "gp", '"+p')
-map({ "n", "v" }, "gP", '"+P')
-
--- yank
-map({ "n", "v" }, "gy", '"+y')
-map({ "n", "v" }, "gY", '"+Y')
 
 function P(v)
   print(vim.inspect(v))
