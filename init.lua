@@ -1,36 +1,11 @@
-local set = vim.opt
-local g = vim.g
 local fn = vim.fn
 local map = vim.keymap.set
 local one_au = require("config.utils").create_onetime_autocmd
 
-vim.cmd "filetype indent off"
-set.number = true
-set.relativenumber = true
-set.tabstop = 2
-set.shiftwidth = 2
-set.expandtab = true
-set.autoindent = false
-set.cindent = false
-set.smartindent = false
-set.swapfile = false
-set.backup = false
-set.writebackup = false
-set.completeopt = { "menu", "menuone", "noselect" }
-set.signcolumn = "yes"
-set.cmdheight = 2
-set.updatetime = 50
-set.shortmess:append "c"
-set.colorcolumn = "100"
-set.splitright = true
-set.cursorline = true
-set.termguicolors = true
-set.pumheight = 10
-set.diffopt:append "vertical"
+require "config.options"
+require "config.commands"
 
-g.mapleader = " "
-
-vim.cmd "cabbrev wqa Wqa"
+require "config.neovide"
 
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
@@ -233,11 +208,17 @@ require("packer").startup(function(use)
   }
 
   use {
+    "folke/tokyonight.nvim",
+    config = function()
+      vim.cmd "colorscheme tokyonight"
+    end,
+  }
+  use {
     "luisiacc/gruvbox-baby",
     config = function()
       require "config.gruvbox"
 
-      vim.cmd "colorscheme gruvbox-baby"
+      -- vim.cmd "colorscheme gruvbox-baby"
     end,
   }
   use {
@@ -290,18 +271,6 @@ map({ "n", "v" }, "gP", '"+P')
 map({ "n", "v" }, "gy", '"+y')
 map({ "n", "v" }, "gY", '"+Y')
 
-function ReloadConfig()
-  local config_prefix = fn.fnamemodify(vim.env.MYVIMRC, ":p:h") .. "/lua/"
-  local lua_dirs = fn.glob(config_prefix .. "**", 0, 1)
-
-  for _, dir in ipairs(lua_dirs) do
-    dir = string.gsub(fn.fnamemodify(dir, ":r"), config_prefix, "")
-    require("plenary.reload").reload_module(dir, true)
-    pcall(require, dir)
-  end
-  dofile(vim.env.MYVIMRC)
-end
-
 function P(v)
   print(vim.inspect(v))
   return v
@@ -311,14 +280,5 @@ function RL(module)
   require("plenary.reload").reload_module(module)
   return require(module)
 end
-
-vim.api.nvim_create_user_command("Wqa", "wa | qa", { force = true })
-vim.api.nvim_create_user_command("R", ReloadConfig, { force = true })
-
-one_au("TextYankPost", {
-  callback = function()
-    vim.highlight.on_yank { higroup = "IncSearch", timeout = 200 }
-  end,
-})
 
 pcall(require, "config.scratchpad")
