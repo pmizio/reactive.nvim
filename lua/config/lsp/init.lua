@@ -88,30 +88,38 @@ local settings = {
   },
 }
 
-require("rust-tools").setup {}
-
 lspinstaller.setup {
   ensure_installed = ensure_installed,
   automatic_installation = true,
 }
 
 for _, server in pairs(lspinstaller.get_installed_servers()) do
-  lspconfig[server.name].setup(vim.tbl_extend("force", {
-    autostart = true,
-    capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
-    on_attach = function(client, bufnr)
-      if server.name == "eslint" then
-        client.server_capabilities.documentFormattingProvider = true
-        client.server_capabilities.renameProvider = false
-        require("lsp-format").on_attach(client)
-      else
-        on_attach(client, bufnr)
-      end
-    end,
-    handlers = handlers,
-  }, {
-    settings = settings[server.name] or {},
-  }))
+  if server.name == "rust_analyzer" then
+    require("rust-tools").setup {
+      server = {
+        capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+        on_attach = on_attach,
+        handlers = handlers,
+        settings = settings[server.name],
+      },
+    }
+  else
+    lspconfig[server.name].setup(vim.tbl_extend("force", {
+      capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+      on_attach = function(client, bufnr)
+        if server.name == "eslint" then
+          client.server_capabilities.documentFormattingProvider = true
+          client.server_capabilities.renameProvider = false
+          require("lsp-format").on_attach(client)
+        else
+          on_attach(client, bufnr)
+        end
+      end,
+      handlers = handlers,
+    }, {
+      settings = settings[server.name] or {},
+    }))
+  end
 end
 
 require("lsp_signature").setup {
