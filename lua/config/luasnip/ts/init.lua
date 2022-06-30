@@ -57,11 +57,10 @@ local jsTsSnippets = {
 
 vim.list_extend(jsTsSnippets, require "config.luasnip.ts.react")
 
-for _, suffix in pairs { "log", "dir", "error" } do
+for _, suffix in pairs { "log", "dir", "error", "trace" } do
   vim.list_extend(jsTsSnippets, utils.print_snip(suffix, "console." .. suffix))
 end
 
 for _, ft in pairs { "javascript", "javascriptreact", "typescript", "typescriptreact" } do
-  -- luasnip.snippets[ft] = jsTsSnippets
   luasnip.add_snippets(ft, jsTsSnippets)
 end
