@@ -1,7 +1,7 @@
-local map = vim.keymap.set
 local actions = require "telescope.actions"
 local telescope = require "telescope"
 local builtin = require "telescope.builtin"
+local m = require "config.utils.map"
 
 telescope.setup {
   defaults = {
@@ -33,15 +33,15 @@ telescope.load_extension "fzf"
 telescope.load_extension "git_worktree"
 telescope.load_extension "project"
 
-map("n", "<C-p>", function()
+m.nmap( "<C-p>", function()
   builtin.find_files { path_display = { "shorten" } }
 end)
-map("n", "<C-f>", function()
+m.nmap( "<C-f>", function()
   builtin.live_grep { only_sort_text = true }
 end)
-map("n", "<leader>b", builtin.buffers)
-map("n", "<C-g>", builtin.git_branches)
-map("n", "<leader>w", telescope.extensions.git_worktree.git_worktrees)
-map("n", "<leader>p", function()
+m.nmap( "<leader>b", builtin.buffers)
+m.nmap( "<C-g>", builtin.git_branches)
+m.nmap( "<leader>w", telescope.extensions.git_worktree.git_worktrees)
+m.nmap( "<leader>p", function()
   telescope.extensions.project.project {}
 end)

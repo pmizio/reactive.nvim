@@ -1,4 +1,4 @@
-local map = vim.keymap.set
+local m = require "config.utils.map"
 local fn = vim.fn
 local one_au = require("config.utils").create_onetime_autocmd
 
@@ -11,7 +11,7 @@ local function toggle_fugitive_status()
   end
 end
 
-map("n", "<leader>gs", toggle_fugitive_status)
+m.nmap("<leader>gs", toggle_fugitive_status)
 
 one_au("FileType", {
   pattern = "gitcommit",

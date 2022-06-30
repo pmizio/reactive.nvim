@@ -2,6 +2,7 @@ local lspconfig = require "lspconfig"
 local lspinstaller = require "nvim-lsp-installer"
 local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
+local m = require "config.utils.map"
 
 local ensure_installed = {
   "tsserver",
@@ -19,10 +20,7 @@ local function on_attach(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
   local function lsp_map(lhs, rhs)
-    vim.keymap.set("n", lhs, rhs, {
-      silent = true,
-      buffer = bufnr,
-    })
+    m.nmap(lhs, rhs, { buffer = bufnr })
   end
 
   lsp_map("gD", vim.lsp.buf.declaration)

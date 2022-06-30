@@ -1,3 +1,5 @@
+local m = require "config.utils.map"
+
 require("true-zen").setup {
   modes = {
     focus = {
@@ -14,4 +16,4 @@ require("true-zen").setup {
   },
 }
 
-vim.keymap.set("n", "<leader>m", ":TZFocus<CR>", { noremap = true, silent = true })
+m.nmap("<leader>m", ":TZFocus<CR>")

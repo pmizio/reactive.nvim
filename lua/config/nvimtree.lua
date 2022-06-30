@@ -1,5 +1,6 @@
 local tree_cb = require("nvim-tree.config").nvim_tree_callback
 local u = require "config.utils"
+local m = require "config.utils.map"
 
 local SIZE = 50
 
@@ -22,5 +23,5 @@ require("nvim-tree").setup {
   },
 }
 
-vim.keymap.set("n", "<leader>nn", ":NvimTreeToggle<CR>", { silent = true })
-vim.keymap.set("n", "<leader>nf", ":NvimTreeFindFile<CR>", { silent = true })
+m.nmap("<leader>nn", ":NvimTreeToggle<CR>")
+m.nmap("<leader>nf", ":NvimTreeFindFile<CR>")

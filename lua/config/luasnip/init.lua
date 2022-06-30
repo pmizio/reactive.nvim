@@ -1,5 +1,5 @@
-local map = vim.keymap.set
 local luasnip = require "luasnip"
+local m = require "config.utils.map"
 
 luasnip.config.set_config {
   history = true,
@@ -11,9 +11,9 @@ luasnip.snippets = {}
 require "config.luasnip.ts"
 require "config.luasnip.lua"
 
-map("i", "<C-n>", function()
+m.imap("<C-n>", function()
   luasnip.jump(1)
 end)
-map("i", "<C-p>", function()
+m.imap("<C-p>", function()
   luasnip.jump(-1)
 end)

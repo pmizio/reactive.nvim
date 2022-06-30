@@ -22,6 +22,10 @@ function M.vmap(...)
   M.map("v", ...)
 end
 
+function M.xmap(...)
+  M.map("x", ...)
+end
+
 function M.tmap(...)
   M.map("t", ...)
 end

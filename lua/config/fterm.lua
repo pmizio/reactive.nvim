@@ -1,6 +1,7 @@
 local fn = vim.fn
 local fterm = require "FTerm"
 local ftutils = require "FTerm.utils"
+local m = require "config.utils.map"
 
 local ADDITIONAL_TERMINALS_BINDINGS = { "j", "k", "l" }
 
@@ -43,14 +44,14 @@ for _, binding in ipairs(ADDITIONAL_TERMINALS_BINDINGS) do
     end
   end
 
-  vim.keymap.set("n", "<leader>t" .. binding, toggle)
-  vim.keymap.set("t", "<leader>t" .. binding, toggle)
+  m.nmap("<leader>t" .. binding, toggle)
+  m.tmap("<leader>t" .. binding, toggle)
 
   terminals[binding] = term
 end
 
-vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
-vim.keymap.set("t", "<C-j>", "<DOWN>")
-vim.keymap.set("t", "<C-k>", "<UP>")
-vim.keymap.set("t", "<C-l>", "<RIGHT>")
-vim.keymap.set("t", "<C-h>", "<LEFT>")
+m.tmap("<ESC>", "<C-\\><C-n>")
+m.tmap("<C-j>", "<DOWN>")
+m.tmap("<C-k>", "<UP>")
+m.tmap("<C-l>", "<RIGHT>")
+m.tmap("<C-h>", "<LEFT>")
