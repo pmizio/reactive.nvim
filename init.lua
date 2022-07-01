@@ -1,5 +1,6 @@
 local fn = vim.fn
 
+require "config.utils.globals"
 require "config.options"
 require "config.commands"
 require "config.mappings"
@@ -212,14 +213,7 @@ require("packer").startup(function(use)
       vim.cmd "colorscheme tokyonight"
     end,
   }
-  use {
-    "luisiacc/gruvbox-baby",
-    config = function()
-      require "config.gruvbox"
 
-      -- vim.cmd "colorscheme gruvbox-baby"
-    end,
-  }
   use {
     "takac/vim-hardtime",
     config = function()
@@ -227,19 +221,16 @@ require("packer").startup(function(use)
     end,
   }
 
+  use {
+    "mbbill/undotree",
+    config = function()
+      require "config.undotree"
+    end,
+  }
+
   if packer_bootstrap then
     require("packer").sync()
   end
 end)
-
-function P(v)
-  print(vim.inspect(v))
-  return v
-end
-
-function RL(module)
-  require("plenary.reload").reload_module(module)
-  return require(module)
-end
 
 pcall(require, "config.scratchpad")

@@ -42,3 +42,6 @@ m.map({ "n", "v" }, "gP", '"+P')
 -- yank
 m.map({ "n", "v" }, "gy", '"+y')
 m.map({ "n", "v" }, "gY", '"+Y')
+
+-- remap n to also center search result
+m.nmap('n', "nzzzv")
