@@ -1,6 +1,20 @@
 local cmp = require "cmp"
 local luasnip = require "luasnip"
 
+local function nop() end
+
+local function map_next_prev(cmp_function, luasnip_offset)
+  return function(fallback)
+    if cmp.visible() then
+      cmp_function { behavior = cmp.SelectBehavior.Insert }(fallback)
+    elseif luasnip.jumpable(luasnip_offset) then
+      luasnip.jump(luasnip_offset)
+    else
+      fallback()
+    end
+  end
+end
+
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -10,8 +24,10 @@ cmp.setup {
   preselect = cmp.PreselectMode.None,
   mapping = cmp.mapping.preset.insert {
     -- remapped by regular nvim to <C-j> and <C-k>
-    ["<C-n>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
-    ["<C-p>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+    ["<C-n>"] = cmp.mapping(map_next_prev(cmp.mapping.select_next_item, 1)),
+    ["<C-p>"] = cmp.mapping(map_next_prev(cmp.mapping.select_prev_item, -1)),
+    ["<Up>"] = nop,
+    ["<Down>"] = nop,
     ["<C-y>"] = cmp.mapping(function(fallback)
       if luasnip.expand_or_jumpable() then
         luasnip.expand_or_jump()
