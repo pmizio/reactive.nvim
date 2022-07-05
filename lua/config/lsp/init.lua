@@ -127,6 +127,10 @@ require("lsp_signature").setup {
   hint_enable = false,
 }
 
+require("fidget").setup {
+  text = { spinner = "moon" },
+}
+
 require "config.lsp.diagnostics"
 
 -- local ok, test = pcall(require, "config.lsp.test")

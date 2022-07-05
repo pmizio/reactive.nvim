@@ -61,3 +61,5 @@ require("nvim-treesitter.configs").setup {
     lint_events = { "BufWrite", "CursorHold" },
   },
 }
+
+require("nvim-autopairs").setup {}

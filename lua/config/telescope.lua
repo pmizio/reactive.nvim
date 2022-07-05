@@ -33,15 +33,15 @@ telescope.load_extension "fzf"
 telescope.load_extension "git_worktree"
 telescope.load_extension "project"
 
-m.nmap( "<C-p>", function()
+m.nmap("<C-p>", function()
   builtin.find_files { path_display = { "shorten" } }
 end)
-m.nmap( "<C-f>", function()
+m.nmap("<C-f>", function()
   builtin.live_grep { only_sort_text = true }
 end)
-m.nmap( "<leader>b", builtin.buffers)
-m.nmap( "<C-g>", builtin.git_branches)
-m.nmap( "<leader>w", telescope.extensions.git_worktree.git_worktrees)
-m.nmap( "<leader>p", function()
+m.nmap("<leader>b", builtin.buffers)
+m.nmap("<C-g>", builtin.git_branches)
+m.nmap("<leader>w", telescope.extensions.git_worktree.git_worktrees)
+m.nmap("<leader>p", function()
   telescope.extensions.project.project {}
 end)
