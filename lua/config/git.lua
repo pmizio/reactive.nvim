@@ -4,8 +4,12 @@ local one_au = require("config.utils").create_onetime_autocmd
 
 -- TODO: convert viml to lua
 local function toggle_fugitive_status()
-  if fn.buflisted(fn.bufname ".git/index") ~= 0 then
-    vim.cmd ":bd .git/index"
+  local fugitive_buf = vim.tbl_filter(function(bufnr)
+    return vim.api.nvim_buf_get_name(bufnr):find "%.git/.*/?index"
+  end, vim.api.nvim_list_bufs())[1]
+
+  if fugitive_buf ~= nil then
+    vim.api.nvim_buf_delete(fugitive_buf, { force = true })
   else
     vim.cmd ":G"
   end
