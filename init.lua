@@ -4,7 +4,7 @@ require "config.commands"
 require "config.mappings"
 
 -- plugins
-require "config.plugins"
+require "plugins"
 
 -- treesitter
 require "config.treesitter"
@@ -24,6 +24,7 @@ require "config.telescope"
 require "config.comment"
 require "config.substitute"
 require "config.quickScope"
+require("nvim-surround").setup {}
 
 -- widgets
 require "config.lualine"
