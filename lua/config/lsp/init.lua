@@ -56,36 +56,6 @@ local settings = {
       },
     },
   },
-  ["sumneko_lua"] = {
-    Lua = {
-      runtime = {
-        version = "LuaJIT",
-        path = vim.split(package.path, ";"),
-      },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file("", true),
-      },
-      completion = {
-        keywordSnippet = "Disable",
-      },
-      diagnostics = {
-        enable = true,
-        disable = { "trailing-space" },
-        globals = {
-          -- Neovim
-          "vim",
-          -- Busted
-          "describe",
-          "it",
-          "before_each",
-          "after_each",
-          "teardown",
-          "pending",
-          "clear",
-        },
-      },
-    },
-  },
 }
 
 lspinstaller.setup {
@@ -103,6 +73,13 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
         settings = settings[server.name],
       },
     }
+  elseif server.name == "sumneko_lua" then
+    local luadev = require("lua-dev").setup {
+      lspconfig = {
+        on_attach = on_attach,
+      },
+    }
+    lspconfig[server.name].setup(luadev)
   else
     lspconfig[server.name].setup(vim.tbl_extend("force", {
       capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities()),
