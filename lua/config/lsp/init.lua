@@ -38,8 +38,8 @@ local function on_attach(client, bufnr)
   lsp_map("gr", function()
     builtin.lsp_references(themes.get_ivy())
   end)
-  lsp_map("[d", vim.lsp.diagnostic.goto_prev)
-  lsp_map("]d", vim.lsp.diagnostic.goto_next)
+  lsp_map("[d", vim.diagnostic.goto_prev)
+  lsp_map("]d", vim.diagnostic.goto_next)
 end
 
 local handlers = {
