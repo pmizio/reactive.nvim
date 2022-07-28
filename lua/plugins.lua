@@ -58,11 +58,11 @@ require("packer").startup(function(use)
   use "windwp/nvim-autopairs"
   use "windwp/nvim-ts-autotag"
   use "numToStr/Comment.nvim"
-  -- use "tpope/vim-surround"
   use "kylechui/nvim-surround"
   use "gbprod/substitute.nvim"
   use "tpope/vim-repeat"
   use "unblevable/quick-scope"
+  use "andymass/vim-matchup"
 
   -- telescope
   use "nvim-telescope/telescope.nvim"

@@ -2,13 +2,7 @@ local fn = vim.fn
 local m = require "config.utils.map"
 
 m.nmap("<ESC>", ":nohl <ESC>")
-
--- map jk and kj to esc
-m.imap("<ESC>", "<NOP>")
-m.imap("jk", "<C-o>:nohl<CR><ESC>")
-m.imap("kj", "<C-o>:nohl<CR><ESC>")
-m.tmap("jk", "<C-\\><C-n>")
-m.tmap("kj", "<C-\\><C-n>")
+m.tmap("<ESC>", "<C-\\><C-n>")
 
 -- disable ex mode
 m.map("", "Q", "<NOP>")
@@ -44,4 +38,4 @@ m.map({ "n", "v" }, "gy", '"+y')
 m.map({ "n", "v" }, "gY", '"+Y')
 
 -- remap n to also center search result
-m.nmap('n', "nzzzv")
+m.nmap("n", "nzzzv")
