@@ -1,4 +1,22 @@
+local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
+
+-- tsserver protocol reference:
+-- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L930
+
+local rename_request_handler = function(_, params)
+  local text_document = params.textDocument
+
+  return {
+    command = constants.CommandTypes.Rename,
+    arguments = vim.tbl_extend("force", {
+      file = vim.uri_to_fname(text_document.uri),
+      -- TODO: expose as options
+      findInComments = false,
+      findInStrings = false,
+    }, utils.convert_lsp_position_to_tsserver(params.position)),
+  }
+end
 
 -- tsserver protocol reference: https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L993
 
@@ -33,7 +51,7 @@ local convert_tsserver_locs_to_changes = function(locs, newText)
   return edits_per_file
 end
 
-return function(_, body, request_param)
+local rename_response_handler = function(_, body, request_param)
   if not body.info.canRename then
     return nil
   end
@@ -42,3 +60,8 @@ return function(_, body, request_param)
     changes = convert_tsserver_locs_to_changes(body.locs, request_param.newName),
   }
 end
+
+return {
+  request = { method = "textDocument/rename", handler = rename_request_handler },
+  response = { method = constants.CommandTypes.Rename, handler = rename_response_handler },
+}

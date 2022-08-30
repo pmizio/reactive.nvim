@@ -1,5 +1,4 @@
-local log = require "vim.lsp.log"
-local constants = require("config.lsp.tsserver.protocol").constants
+local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
 -- tsserver protocol reference:
@@ -18,11 +17,11 @@ local convert_text_changes = function(file, content_changes)
   }
 end
 
-return function(encode_and_send, _, params)
+local change_request_handler = function(_, params)
   local text_document = params.textDocument
   local content_changes = params.contentChanges
 
-  local req = {
+  return {
     command = constants.CommandTypes.UpdateOpen,
     arguments = {
       changedFiles = {
@@ -30,6 +29,8 @@ return function(encode_and_send, _, params)
       },
     },
   }
-
-  encode_and_send(req)
 end
+
+return {
+  request = { method = "textDocument/didChange", handler = change_request_handler },
+}

@@ -40,4 +40,5 @@ M.convert_tsserver_range_to_lsp = function(range)
     ["end"] = M.convert_tsserver_position_to_lsp(range["end"]),
   }
 end
+
 return M

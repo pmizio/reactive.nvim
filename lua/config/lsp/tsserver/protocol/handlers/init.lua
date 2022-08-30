@@ -1,9 +1,22 @@
-local constants = require "config.lsp.tsserver.protocol.constants"
+local make_protocol_handlers = function()
+  local request_handlers, response_handlers = {}, {}
 
-local handlers = {
-  [constants.CommandTypes.Configure] = require "config.lsp.tsserver.protocol.handlers.possible_error",
-  [constants.CommandTypes.CompilerOptionsForInferredProjects] = require "config.lsp.tsserver.protocol.handlers.possible_error",
-  [constants.CommandTypes.Rename] = require "config.lsp.tsserver.protocol.handlers.rename",
-}
+  local assign_handlers = function(config)
+    local request = config.request
+    local response = config.response
 
-return handlers
+    request_handlers[request.method] = request.handler
+
+    if response then
+      response_handlers[response.method] = response.handler
+    end
+  end
+
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.did_open")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.did_change")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.rename")
+
+  return request_handlers, response_handlers
+end
+
+return make_protocol_handlers

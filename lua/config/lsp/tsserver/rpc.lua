@@ -6,8 +6,9 @@ local util = require "lspconfig.util"
 local configs = require "lspconfig.configs"
 local Path = require "plenary.path"
 
-local setup_requests = require "config.lsp.tsserver.protocol.lsp.request"
-local handlers = require("config.lsp.tsserver.protocol").handlers
+local initialize = require("config.lsp.tsserver.protocol").initialize
+local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
+local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
 
 local is_win = uv.os_uname().version:find "Windows"
 
@@ -98,7 +99,11 @@ M.start = function(server_name, dispatchers)
       return nil
     end
 
-    local handler = handlers[response.command]
+    if not initialize.handle_response(response) then
+      return
+    end
+
+    local handler = response_handlers[response.command]
     local request_seq = response.request_seq
     local callback = callbacks[request_seq]
     local notify_reply_callback = notify_reply_callbacks[request_seq]
@@ -127,11 +132,12 @@ M.start = function(server_name, dispatchers)
       if result then
         callback(nil, result)
       end
+    end
 
-      -- in case of unhandled request cleanup it's mess
-      if request_seq then
-        callbacks[request_seq] = nil
-      end
+    -- in case of unhandled request cleanup it's mess
+    if request_seq then
+      request_params[request_seq] = nil
+      callbacks[request_seq] = nil
     end
   end
 
@@ -142,8 +148,8 @@ M.start = function(server_name, dispatchers)
     local header_end, body_start = chunk:find("\r\n\r\n", 1, true)
     if header_end then
       local header = chunk:sub(1, header_end - 1)
-      local body = chunk:sub(body_start + 1)
       local body_length = parse_content_length(header)
+      local body = chunk:sub(body_start + 1, body_start + body_length)
       log.warn(">>>>>" .. body_length)
       log.warn(">>>>>" .. body)
       log.warn(">>>>>" .. #body)
@@ -189,13 +195,17 @@ M.start = function(server_name, dispatchers)
     seq = seq + 1
   end
 
-  local requests = setup_requests(encode_and_send)
-
   return {
     request = function(method, params, callback, notify_reply_callback)
       P("request: " .. method)
 
-      local tsserver_request = requests[method]
+      -- initialize needs special treatment - in tsserver protocol is splitted in two requests
+      if method == "initialize" then
+        initialize.handle_request(encode_and_send, callback)
+        return
+      end
+
+      local tsserver_request = request_handlers[method]
 
       if tsserver_request then
         request_params[seq] = params
@@ -208,17 +218,15 @@ M.start = function(server_name, dispatchers)
           notify_reply_callbacks[seq] = schedule_wrap(notify_reply_callback)
         end
 
-        return tsserver_request(method, params, callback, notify_reply_callbacks)
+        encode_and_send(tsserver_request(method, params, callback, notify_reply_callbacks))
       end
-
-      return false
     end,
     notify = function(method, ...)
       P("notify: " .. method)
-      local tsserver_request = requests[method]
+      local tsserver_request = request_handlers[method]
 
       if tsserver_request then
-        return tsserver_request(method, ...)
+        encode_and_send(tsserver_request(method, ...))
       end
 
       return false
