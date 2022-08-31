@@ -79,4 +79,11 @@ return {
     TSX = "TSX",
     JSX = "JSX",
   },
+  LspMethods = {
+    Initialize = "initialize",
+    DidOpen = "textDocument/didOpen",
+    DidChange = "textDocument/didChange",
+    Rename = "textDocument/rename",
+    Completion = "textDocument/completion",
+  },
 }

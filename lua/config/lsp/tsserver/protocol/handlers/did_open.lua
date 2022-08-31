@@ -18,5 +18,5 @@ local open_request_handler = function(_, params)
 end
 
 return {
-  request = { method = "textDocument/didOpen", handler = open_request_handler },
+  request = { method = constants.LspMethods.DidOpen, handler = open_request_handler },
 }

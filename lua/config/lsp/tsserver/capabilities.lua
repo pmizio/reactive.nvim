@@ -6,6 +6,30 @@ local capabilities = {
     -- tsserver doesn't have something like textDocument/prepareRename
     prepareProvider = false,
   },
+  completionProvider = {
+    resolveProvider = false,
+    triggerCharacters = {
+      ".",
+      '"',
+      "'",
+      "`",
+      "/",
+      "@",
+      "<",
+
+      -- Emmet
+      ">",
+      "*",
+      "#",
+      "$",
+      "+",
+      "^",
+      "(",
+      "[",
+      "@",
+      "-",
+    },
+  },
 }
 
 return capabilities

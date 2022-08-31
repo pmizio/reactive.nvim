@@ -9,6 +9,7 @@ local Path = require "plenary.path"
 local initialize = require("config.lsp.tsserver.protocol").initialize
 local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
+local constants = require "config.lsp.tsserver.protocol.constants"
 
 local is_win = uv.os_uname().version:find "Windows"
 
@@ -142,22 +143,39 @@ M.start = function(server_name, dispatchers)
   end
 
   ---@param chunk string
-  local parse_response = function(chunk)
-    log.warn(chunk)
+  local parse_response = coroutine.wrap(function()
+    while true do
+      local chunk = coroutine.yield()
+      -- log.warn(chunk)
 
-    local header_end, body_start = chunk:find("\r\n\r\n", 1, true)
-    if header_end then
-      local header = chunk:sub(1, header_end - 1)
-      local body_length = parse_content_length(header)
-      local body = chunk:sub(body_start + 1, body_start + body_length)
-      log.warn(">>>>>" .. body_length)
-      log.warn(">>>>>" .. body)
-      log.warn(">>>>>" .. #body)
-      if body_length == #body then
-        handle_body(body)
+      local header_end, body_start = chunk:find("\r\n\r\n", 1, true)
+      if header_end then
+        local header = chunk:sub(1, header_end - 1)
+        local body_length = parse_content_length(header)
+        local body = chunk:sub(body_start + 1, body_start + body_length)
+        -- log.warn(">>>>>" .. body_length)
+        log.warn(">>>>>" .. body)
+        -- log.warn(">>>>>" .. #body)
+        if body_length > #body then
+          local buf = { body }
+          local buf_len = #body
+
+          while buf_len < body_length do
+            chunk = coroutine.yield()
+            buf_len = buf_len + #chunk
+            table.insert(buf, chunk)
+          end
+
+          handle_body(table.concat(buf, ""))
+        else
+          handle_body(body)
+        end
       end
     end
-  end
+  end)
+
+  -- skip argunet passing and proceed to coroutine.yield
+  parse_response()
 
   stdout:read_start(function(err, chunk)
     if err then
@@ -200,7 +218,7 @@ M.start = function(server_name, dispatchers)
       P("request: " .. method)
 
       -- initialize needs special treatment - in tsserver protocol is splitted in two requests
-      if method == "initialize" then
+      if method == constants.LspMethods.Initialize then
         initialize.handle_request(encode_and_send, callback)
         return
       end

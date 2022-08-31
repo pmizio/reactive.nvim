@@ -62,6 +62,6 @@ local rename_response_handler = function(_, body, request_param)
 end
 
 return {
-  request = { method = "textDocument/rename", handler = rename_request_handler },
+  request = { method = constants.LspMethods.Rename, handler = rename_request_handler },
   response = { method = constants.CommandTypes.Rename, handler = rename_response_handler },
 }
