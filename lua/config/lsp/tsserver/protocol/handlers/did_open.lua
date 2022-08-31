@@ -8,11 +8,16 @@ local open_request_handler = function(_, params)
   local text_document = params.textDocument
 
   return {
-    command = constants.CommandTypes.Open,
+    command = constants.CommandTypes.UpdateOpen,
     arguments = {
-      file = vim.uri_to_fname(text_document.uri),
-      fileContent = text_document.text,
-      scriptKindName = utils.get_text_document_script_kind(text_document),
+      openFiles = {
+        {
+          file = vim.uri_to_fname(text_document.uri),
+          fileContent = text_document.text,
+          projectRootPath = "/home/miziak/test",
+          scriptKindName = utils.get_text_document_script_kind(text_document),
+        },
+      },
     },
   }
 end

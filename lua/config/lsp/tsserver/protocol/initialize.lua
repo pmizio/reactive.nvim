@@ -19,7 +19,10 @@ M.handle_request = function(encode_and_send, callback)
     command = constants.CommandTypes.Configure,
     arguments = {
       hostInfo = "neovim",
+      -- TODO: expose as configuration
       preferences = {
+        includeCompletionsForModuleExports = true,
+        includeCompletionsWithInsertText = true,
         quotePreference = "auto",
         importModuleSpecifierEnding = "auto",
         jsxAttributeCompletionStyle = "auto",

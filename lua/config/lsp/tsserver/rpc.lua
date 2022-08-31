@@ -100,6 +100,8 @@ M.start = function(server_name, dispatchers)
       return nil
     end
 
+    log.warn(">>>>>" .. body_string)
+
     if not initialize.handle_response(response) then
       return
     end
@@ -154,7 +156,6 @@ M.start = function(server_name, dispatchers)
         local body_length = parse_content_length(header)
         local body = chunk:sub(body_start + 1, body_start + body_length)
         -- log.warn(">>>>>" .. body_length)
-        log.warn(">>>>>" .. body)
         -- log.warn(">>>>>" .. #body)
         if body_length > #body then
           local buf = { body }
