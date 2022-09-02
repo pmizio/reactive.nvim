@@ -159,6 +159,7 @@ return {
   LspMethods = {
     Initialize = "initialize",
     DidOpen = "textDocument/didOpen",
+    DidClose = "textDocument/didClose",
     DidChange = "textDocument/didChange",
     Rename = "textDocument/rename",
     Completion = "textDocument/completion",
