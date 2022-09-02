@@ -7,11 +7,17 @@ local NAME = "tsserver_nvim"
 local M = {}
 
 M.setup = function(on_attach)
-  rpc.setup(NAME)
-
   configs[NAME] = {
     default_config = {
-      cmd = { NAME },
+      cmd = function(...)
+        local ok, tsserver_rpc = pcall(rpc.start, NAME, ...)
+        if ok then
+          return tsserver_rpc
+        else
+        end
+
+        return nil
+      end,
       filetypes = {
         "javascript",
         "javascriptreact",
@@ -20,7 +26,12 @@ M.setup = function(on_attach)
         "typescriptreact",
         "typescript.tsx",
       },
-      root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
+      root_dir = lspconfig.util.root_pattern(
+        "package.json",
+        "tsconfig.json",
+        "jsconfig.json",
+        ".git"
+      ),
     },
   }
 

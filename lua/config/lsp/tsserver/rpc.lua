@@ -15,28 +15,6 @@ local is_win = uv.os_uname().version:find "Windows"
 
 local M = {}
 
----@param server_name string
-M.setup = function(server_name)
-  local rpc = require "vim.lsp.rpc"
-
-  if rpc._setup_tsserver_nvim then
-    return
-  end
-
-  local nvim_rpc_start = rpc.start
-
-  rpc.start = function(cmd, cmd_args, dispatchers, ...)
-    if cmd == server_name then
-      return M.start(server_name, dispatchers)
-    end
-
-    return nvim_rpc_start(cmd, cmd_args, dispatchers, ...)
-  end
-
-  rpc._setup_tsserver_nvim = true
-end
-
----@param server_name string
 M.start = function(server_name, dispatchers)
   local config = configs[server_name]
   local bufnr = api.nvim_get_current_buf()
@@ -250,8 +228,14 @@ M.start = function(server_name, dispatchers)
 
       return false
     end,
-    pid = pid,
-    handle = handle,
+    is_closing = function()
+      return handle == nil or handle:is_closing()
+    end,
+    terminate = function()
+      if handle then
+        handle:kill(15)
+      end
+    end,
   }
 end
 
