@@ -1,6 +1,5 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
-local map_completion_item_kind =
-  require "config.lsp.tsserver.protocol.handlers.completion.map_completion_item_kind"
+local item_kind_utils = require "config.lsp.tsserver.protocol.handlers.completion.item_kind_utils"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
 -- tsserver protocol reference
@@ -19,6 +18,20 @@ local completion_request_handler = function(_, params)
   return req
 end
 
+local calculate_text_edit = function(replacement_span, newText)
+  if not replacement_span then
+    return nil
+  end
+
+  local replacement_range = utils.convert_tsserver_range_to_lsp(replacement_span)
+
+  return {
+    newText = newText,
+    insert = replacement_range,
+    replace = replacement_range,
+  }
+end
+
 local completion_response_handler = function(_, body, request_params)
   if not body then
     return {}
@@ -31,18 +44,19 @@ local completion_response_handler = function(_, body, request_params)
     local is_optional = string.find(item.kindModifiers, "optional", 1, true)
     local is_deprecated = string.find(item.kindModifiers, "deprecated", 1, true)
     local insertText = item.insertText or item.name
+    local kind = item_kind_utils.map_completion_item_kind(item.kind)
 
     return {
-      -- FIXME: automatic optional chaining leave additional comma
       label = is_optional and (item.name .. "?") or item.name,
       labelDetails = item.labelDetails,
       insertText = insertText,
       filterText = insertText,
-      commitCharacters = nil, -- TODO: calculate commit characters based on item kind
-      kind = map_completion_item_kind(item.kind),
+      commitCharacters = item_kind_utils.calculate_commit_characters(kind),
+      kind = kind,
       insertTextFormat = item.isSnippet and constants.InsertTextFormat.Snippet
         or constants.InsertTextFormat.PlainText,
       sortText = item.sortText,
+      textEdit = calculate_text_edit(item.replacementSpan, insertText),
       -- for now lsp support only one tag - deprecated - 1
       tags = is_deprecated and { 1 } or nil,
       data = vim.tbl_extend("force", {

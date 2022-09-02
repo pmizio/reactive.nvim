@@ -1,5 +1,7 @@
 local c = require "config.lsp.tsserver.protocol.constants"
 
+local M = {}
+
 local tsserver_kind_to_lsp_kind = {
   [c.ScriptElementKind.unknown] = c.CompletionItemKind.Text,
   [c.ScriptElementKind.warning] = c.CompletionItemKind.Text,
@@ -40,7 +42,7 @@ local tsserver_kind_to_lsp_kind = {
   [c.ScriptElementKind.linkText] = c.CompletionItemKind.Text,
 }
 
-local map_completion_item_kind = function(script_element_kind)
+M.map_completion_item_kind = function(script_element_kind)
   local kind = tsserver_kind_to_lsp_kind[script_element_kind]
 
   if kind then
@@ -50,4 +52,22 @@ local map_completion_item_kind = function(script_element_kind)
   return c.ScriptElementKind.Text
 end
 
-return map_completion_item_kind
+local item_kind_to_commit_character = {
+  [c.CompletionItemKind.Class] = { ".", ",", "(" },
+  [c.CompletionItemKind.Constant] = { ".", "?" },
+  [c.CompletionItemKind.Constructor] = { "(" },
+  [c.CompletionItemKind.Enum] = { "." },
+  [c.CompletionItemKind.Field] = { ".", "(" },
+  [c.CompletionItemKind.Function] = { ".", "(" },
+  [c.CompletionItemKind.Interface] = { ":", "." },
+  [c.CompletionItemKind.Method] = { "(" },
+  [c.CompletionItemKind.Module] = { ".", "?" },
+  [c.CompletionItemKind.Property] = { ".", "?" },
+  [c.CompletionItemKind.Variable] = { ".", "?" },
+}
+
+M.calculate_commit_characters = function(kind)
+  return item_kind_to_commit_character[kind]
+end
+
+return M
