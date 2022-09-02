@@ -7,7 +7,7 @@ local capabilities = {
     prepareProvider = false,
   },
   completionProvider = {
-    resolveProvider = false,
+    resolveProvider = true,
     triggerCharacters = {
       ".",
       '"',

@@ -162,6 +162,7 @@ return {
     DidChange = "textDocument/didChange",
     Rename = "textDocument/rename",
     Completion = "textDocument/completion",
+    CompletionResolve = "completionItem/resolve",
   },
   CompletionItemKind = {
     Text = 1,
@@ -193,5 +194,9 @@ return {
   InsertTextFormat = {
     PlainText = 1,
     Snippet = 2,
+  },
+  MarkupKind = {
+    PlainText = "plaintext",
+    Markdown = "markdown",
   },
 }

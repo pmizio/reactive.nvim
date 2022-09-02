@@ -38,7 +38,6 @@ local completion_response_handler = function(_, body, request_params)
   end
 
   local file = vim.uri_to_fname(request_params.textDocument.uri)
-  local position = utils.convert_lsp_position_to_tsserver(request_params.position)
 
   return vim.tbl_map(function(item)
     local is_optional = string.find(item.kindModifiers, "optional", 1, true)
@@ -61,12 +60,14 @@ local completion_response_handler = function(_, body, request_params)
       tags = is_deprecated and { 1 } or nil,
       data = vim.tbl_extend("force", {
         file = file,
-        entryNames = (item.source or item.data) and {
-          name = item.name,
-          source = item.source,
-          data = item.data,
-        } or item.name,
-      }, position),
+        entryNames = {
+          (item.source or item.data) and {
+            name = { item.name },
+            source = item.source,
+            data = item.data,
+          } or item.name,
+        },
+      }, request_params.position),
     }
   end, body.entries or {})
 end

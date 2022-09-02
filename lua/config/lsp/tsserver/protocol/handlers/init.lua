@@ -16,6 +16,7 @@ local make_protocol_handlers = function()
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.did_change")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.rename")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.completion")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.completion.resolve")
 
   return request_handlers, response_handlers
 end
