@@ -30,6 +30,7 @@ local capabilities = {
       "-",
     },
   },
+  hoverProvider = true,
 }
 
 return capabilities

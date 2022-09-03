@@ -10,6 +10,7 @@ local severity_map = {
   error = constants.DiagnosticSeverity.Error,
 }
 
+-- TODO: add cleanup while before server restart
 local DiagnosticsService = {
   tracked_request = nil,
   diagnostics_cache = {},

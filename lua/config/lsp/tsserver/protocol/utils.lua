@@ -41,4 +41,26 @@ M.convert_tsserver_range_to_lsp = function(range)
   }
 end
 
+M.tsserver_docs_to_plain_text = function(parts, delim, tag_formatting)
+  delim = delim or ""
+  return table.concat(vim.tbl_map(function(it)
+    if tag_formatting and it.kind == "parameterName" then
+      return "`" .. it.text .. "`"
+    end
+
+    return it.text
+  end, parts) or {}, delim)
+end
+
+M.tsserver_make_tags = function(tags)
+  return table.concat(vim.tbl_map(function(it)
+    local parts = { "\n_@" }
+    table.insert(parts, it.name)
+    table.insert(parts, "_ — ")
+    table.insert(parts, M.tsserver_docs_to_plain_text(it.text, nil, true))
+
+    return table.concat(parts, "")
+  end, tags) or {}, "\n")
+end
+
 return M

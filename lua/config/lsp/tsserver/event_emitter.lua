@@ -1,5 +1,6 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
 
+-- TODO: add cleanup while before server restart
 local EventEmitter = {
   listeners = {},
   update_open_tracker = {},

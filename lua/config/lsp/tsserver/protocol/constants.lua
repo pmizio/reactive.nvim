@@ -172,6 +172,7 @@ return {
     Completion = "textDocument/completion",
     CompletionResolve = "completionItem/resolve",
     PublishDiagnostics = "textDocument/publishDiagnostics",
+    Hover = "textDocument/hover",
   },
   CompletionItemKind = {
     Text = 1,
