@@ -6,10 +6,11 @@ local util = require "lspconfig.util"
 local configs = require "lspconfig.configs"
 local Path = require "plenary.path"
 
+local EventEmitter = require "config.lsp.tsserver.event_emitter"
 local initialize = require("config.lsp.tsserver.protocol").initialize
 local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
-local diagnostics = require "config.lsp.tsserver.protocol.diagnostics"
+local DiagnosticsService = require "config.lsp.tsserver.protocol.diagnostics"
 local constants = require "config.lsp.tsserver.protocol.constants"
 
 local is_win = uv.os_uname().version:find "Windows"
@@ -34,6 +35,8 @@ M.start = function(server_name, dispatchers)
   local request_params = {}
   local callbacks = {}
   local notify_reply_callbacks = {}
+  local event_emitter = EventEmitter:new()
+  local diagnostics_service = DiagnosticsService:new(server_name)
 
   local stdin = uv.new_pipe(false)
   local stdout = uv.new_pipe(false)
@@ -64,25 +67,6 @@ M.start = function(server_name, dispatchers)
     return
   end
 
-  ---@param message table
-  local encode_and_send = function(message)
-    local full_message = vim.tbl_extend("force", {
-      seq = seq,
-      type = "request",
-    }, message)
-    local as_json = vim.json.encode(full_message)
-
-    stdin:write(as_json)
-    -- this flush request to tsserver
-    stdin:write "\r\n"
-
-    local tmp_seq = seq
-
-    seq = seq + 1
-
-    return tmp_seq
-  end
-
   --- tsserver send only one header - Content-Length so we can just hardcode length of header name:
   --- Content-Length:_ = 16, but lua is 1 based so: 16 + 1 = 17
   ---
@@ -98,13 +82,13 @@ M.start = function(server_name, dispatchers)
       return nil
     end
 
-    -- log.warn(">>>>>" .. body_string)
+    log.warn(">>>>>" .. body_string)
 
     if not initialize.handle_response(response) then
       return
     end
 
-    diagnostics.handler(response, encode_and_send, dispatchers.notification)
+    event_emitter:process_tsserver_response(response)
 
     local handler = response_handlers[response.command]
     local request_seq = response.request_seq
@@ -198,6 +182,27 @@ M.start = function(server_name, dispatchers)
     end
   end)
 
+  ---@param message table
+  local encode_and_send = function(message)
+    local full_message = vim.tbl_extend("force", {
+      seq = seq,
+      type = "request",
+    }, message)
+    local as_json = vim.json.encode(full_message)
+
+    stdin:write(as_json)
+    -- this flush request to tsserver
+    stdin:write "\r\n"
+
+    local tmp_seq = seq
+
+    seq = seq + 1
+
+    return tmp_seq
+  end
+
+  diagnostics_service:setup_event_emitter(event_emitter, encode_and_send, dispatchers.notification)
+
   return {
     request = function(method, params, callback, notify_reply_callback)
       P("request: " .. method)
@@ -227,7 +232,7 @@ M.start = function(server_name, dispatchers)
     notify = function(method, params, ...)
       P("notify: " .. method)
 
-      diagnostics.track_changes(method, params, seq)
+      event_emitter:track_update_notification(method, seq)
 
       local tsserver_request = request_handlers[method]
 
