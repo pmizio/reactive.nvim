@@ -1,5 +1,4 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
-local utils = require "config.lsp.tsserver.protocol.utils"
 
 -- tsserver protocol reference:
 -- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L1305

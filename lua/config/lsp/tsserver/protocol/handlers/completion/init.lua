@@ -7,15 +7,18 @@ local utils = require "config.lsp.tsserver.protocol.utils"
 local completion_request_handler = function(_, params)
   local text_document = params.textDocument
   local context = params.context or {}
-  local req = {
+  local trigger_character = context.triggerCharacter
+
+  return {
     command = constants.CommandTypes.CompletionInfo,
     arguments = vim.tbl_extend("force", {
       file = vim.uri_to_fname(text_document.uri),
       triggerKind = context.triggerKind,
-      triggerCharacter = context.triggerCharacter,
+      triggerCharacter = vim.tbl_contains(constants.CompletionsTriggerCharacter, trigger_character)
+          and trigger_character
+        or nil,
     }, utils.convert_lsp_position_to_tsserver(params.position)),
   }
-  return req
 end
 
 local calculate_text_edit = function(replacement_span, newText)

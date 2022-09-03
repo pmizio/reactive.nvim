@@ -9,6 +9,7 @@ local Path = require "plenary.path"
 local initialize = require("config.lsp.tsserver.protocol").initialize
 local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
+local diagnostics = require "config.lsp.tsserver.protocol.diagnostics"
 local constants = require "config.lsp.tsserver.protocol.constants"
 
 local is_win = uv.os_uname().version:find "Windows"
@@ -63,6 +64,25 @@ M.start = function(server_name, dispatchers)
     return
   end
 
+  ---@param message table
+  local encode_and_send = function(message)
+    local full_message = vim.tbl_extend("force", {
+      seq = seq,
+      type = "request",
+    }, message)
+    local as_json = vim.json.encode(full_message)
+
+    stdin:write(as_json)
+    -- this flush request to tsserver
+    stdin:write "\r\n"
+
+    local tmp_seq = seq
+
+    seq = seq + 1
+
+    return tmp_seq
+  end
+
   --- tsserver send only one header - Content-Length so we can just hardcode length of header name:
   --- Content-Length:_ = 16, but lua is 1 based so: 16 + 1 = 17
   ---
@@ -78,11 +98,13 @@ M.start = function(server_name, dispatchers)
       return nil
     end
 
-    log.warn(">>>>>" .. body_string)
+    -- log.warn(">>>>>" .. body_string)
 
     if not initialize.handle_response(response) then
       return
     end
+
+    diagnostics.handler(response, encode_and_send, dispatchers.notification)
 
     local handler = response_handlers[response.command]
     local request_seq = response.request_seq
@@ -122,33 +144,32 @@ M.start = function(server_name, dispatchers)
     end
   end
 
-  ---@param chunk string
   local parse_response = coroutine.wrap(function()
+    local buffer = ""
+
     while true do
-      local chunk = coroutine.yield()
-      -- log.warn(chunk)
+      local header_end, body_start = buffer:find("\r\n\r\n", 1, true)
 
-      local header_end, body_start = chunk:find("\r\n\r\n", 1, true)
       if header_end then
-        local header = chunk:sub(1, header_end - 1)
-        local body_length = parse_content_length(header)
-        local body = chunk:sub(body_start + 1, body_start + body_length)
-        -- log.warn(">>>>>" .. body_length)
-        -- log.warn(">>>>>" .. #body)
-        if body_length > #body then
-          local buf = { body }
-          local buf_len = #body
+        local header = buffer:sub(1, header_end - 1)
+        local content_length = parse_content_length(header)
+        local body = buffer:sub(body_start + 1)
+        local body_chunks = { body }
+        local body_length = #body
 
-          while buf_len < body_length do
-            chunk = coroutine.yield()
-            buf_len = buf_len + #chunk
-            table.insert(buf, chunk)
-          end
-
-          handle_body(table.concat(buf, ""))
-        else
-          handle_body(body)
+        while body_length < content_length do
+          local chunk = coroutine.yield()
+          table.insert(body_chunks, chunk)
+          body_length = body_length + #chunk
         end
+
+        local chunks = table.concat(body_chunks, "")
+        body = chunks:sub(1, content_length)
+        buffer = chunks:sub(content_length + 1)
+
+        handle_body(body)
+      else
+        buffer = buffer .. coroutine.yield()
       end
     end
   end)
@@ -177,21 +198,6 @@ M.start = function(server_name, dispatchers)
     end
   end)
 
-  ---@param message table
-  local encode_and_send = function(message)
-    local full_message = vim.tbl_extend("force", {
-      seq = seq,
-      type = "request",
-    }, message)
-    local as_json = vim.json.encode(full_message)
-
-    stdin:write(as_json)
-    -- this flush request to tsserver
-    stdin:write "\r\n"
-
-    seq = seq + 1
-  end
-
   return {
     request = function(method, params, callback, notify_reply_callback)
       P("request: " .. method)
@@ -218,12 +224,15 @@ M.start = function(server_name, dispatchers)
         encode_and_send(tsserver_request(method, params, callback, notify_reply_callbacks))
       end
     end,
-    notify = function(method, ...)
+    notify = function(method, params, ...)
       P("notify: " .. method)
+
+      diagnostics.track_changes(method, params, seq)
+
       local tsserver_request = request_handlers[method]
 
       if tsserver_request then
-        encode_and_send(tsserver_request(method, ...))
+        encode_and_send(tsserver_request(method, params, ...))
       end
 
       return false

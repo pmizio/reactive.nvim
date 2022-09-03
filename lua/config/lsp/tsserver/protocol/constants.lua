@@ -150,12 +150,19 @@ return {
     -- Jsdoc @link: in `{@link C link text}`, the link text "link text"
     linkText = "link text",
   },
+  CompletionsTriggerCharacter = { ".", '"', "'", "`", "/", "@", "<", "#", " " },
   ScriptKindName = {
     TS = "TS",
     JS = "JS",
     TSX = "TSX",
     JSX = "JSX",
   },
+  DiagnosticEventKind = {
+    SemanticDiag = "semanticDiag",
+    SyntaxDiag = "syntaxDiag",
+    SuggestionDiag = "suggestionDiag",
+  },
+  RequestCompletedEventName = "requestCompleted",
   LspMethods = {
     Initialize = "initialize",
     DidOpen = "textDocument/didOpen",
@@ -164,6 +171,7 @@ return {
     Rename = "textDocument/rename",
     Completion = "textDocument/completion",
     CompletionResolve = "completionItem/resolve",
+    PublishDiagnostics = "textDocument/publishDiagnostics",
   },
   CompletionItemKind = {
     Text = 1,
@@ -199,5 +207,11 @@ return {
   MarkupKind = {
     PlainText = "plaintext",
     Markdown = "markdown",
+  },
+  DiagnosticSeverity = {
+    Error = 1,
+    Warning = 2,
+    Information = 3,
+    Hint = 4,
   },
 }

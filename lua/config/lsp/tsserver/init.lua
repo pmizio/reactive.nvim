@@ -1,3 +1,4 @@
+local log = require "vim.lsp.log"
 local lspconfig = require "lspconfig"
 local configs = require "lspconfig.configs"
 local rpc = require "config.lsp.tsserver.rpc"
@@ -14,6 +15,7 @@ M.setup = function(on_attach)
         if ok then
           return tsserver_rpc
         else
+          log.error(tsserver_rpc)
         end
 
         return nil
