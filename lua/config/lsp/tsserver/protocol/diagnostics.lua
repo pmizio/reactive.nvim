@@ -67,15 +67,29 @@ local category_to_severity = function(category)
   return severity
 end
 
+local convert_related_information = function(related_information)
+  return vim.tbl_map(function(info)
+    return {
+      message = info.message,
+      location = {
+        uri = vim.uri_from_fname(info.span.file),
+        range = utils.convert_tsserver_range_to_lsp(info.span),
+      },
+    }
+  end, related_information)
+end
+
 function DiagnosticsService:_collect_diagnostics(response)
   for _, diagnostic in pairs(response.body.diagnostics) do
     table.insert(self.diagnostics_cache[response.body.file], {
-      -- TODO: handle `relatedInformation`
       message = diagnostic.text,
       source = SOURCE,
       code = diagnostic.code,
       severity = category_to_severity(diagnostic.category),
       range = utils.convert_tsserver_range_to_lsp(diagnostic),
+      relatedInformation = diagnostic.relatedInformation and convert_related_information(
+        diagnostic.relatedInformation
+      ),
     })
   end
 end
