@@ -42,7 +42,11 @@ function EventEmitter:_call_listeners(event, response)
   end
 
   for _, listener in pairs(listeners) do
-    listener(response)
+    local ok, error = pcall(listener, response)
+
+    if not ok then
+      log.error('[tsserver] Error whie execution of "' .. event .. '" listener: ' .. error)
+    end
   end
 end
 
