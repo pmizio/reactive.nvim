@@ -1,21 +1,8 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
 local capabilities = require "config.lsp.tsserver.capabilities"
 
-local M = {}
-
----@private
-M[constants.CommandTypes.Configure] = nil
----@private
-M[constants.CommandTypes.CompilerOptionsForInferredProjects] = nil
----@private
-M._encode_and_send = function(arg) end
----@private
-M._callback = function(arg1, arg2) end
-
-M.handle_request = function(encode_and_send, callback)
-  M._encode_and_send = encode_and_send
-  M._callback = callback
-  encode_and_send {
+local configure = function()
+  return {
     command = constants.CommandTypes.Configure,
     arguments = {
       hostInfo = "neovim",
@@ -54,48 +41,37 @@ M.handle_request = function(encode_and_send, callback)
   }
 end
 
-M.handle_response = function(response)
-  if response.type == "response" and response.command == constants.CommandTypes.Configure then
-    if not response.success then
-      vim.notify("Initial configuration of tsserver failed!", vim.log.levels.ERROR)
-      return false
-    end
-
-    -- TODO: in here we need get this options from tsconfig.json
-    M._encode_and_send {
-      command = constants.CommandTypes.CompilerOptionsForInferredProjects,
-      arguments = {
-        options = {
-          module = "ESNext",
-          moduleResolution = "Node",
-          target = "ES2020",
-          jsx = "react",
-          strictNullChecks = true,
-          strictFunctionTypes = true,
-          sourceMap = true,
-          allowJs = true,
-          allowSyntheticDefaultImports = true,
-          allowNonTsExtensions = true,
-          resolveJsonModule = true,
-        },
+local initialize_request_handler = function()
+  -- TODO: in here we need get this options from tsconfig.json
+  return {
+    command = constants.CommandTypes.CompilerOptionsForInferredProjects,
+    arguments = {
+      options = {
+        module = "ESNext",
+        moduleResolution = "Node",
+        target = "ES2020",
+        jsx = "react",
+        strictNullChecks = true,
+        strictFunctionTypes = true,
+        sourceMap = true,
+        allowJs = true,
+        allowSyntheticDefaultImports = true,
+        allowNonTsExtensions = true,
+        resolveJsonModule = true,
       },
-    }
-    return false
-  elseif
-    response.type == "response"
-    and response.command == constants.CommandTypes.CompilerOptionsForInferredProjects
-  then
-    if not response.success then
-      vim.notify("Setup of typescript compiler options failed!", vim.log.levels.ERROR)
-      return false
-    end
-
-    vim.schedule(function()
-      M._callback(nil, { capabilities = capabilities })
-    end)
-  end
-
-  return true
+    },
+  }
 end
 
-return M
+local initialize_response_handler = function()
+  return { capabilities = capabilities }
+end
+
+return {
+  configure = configure,
+  request = { method = constants.LspMethods.Initialize, handler = initialize_request_handler },
+  response = {
+    method = constants.CommandTypes.CompilerOptionsForInferredProjects,
+    handler = initialize_response_handler,
+  },
+}
