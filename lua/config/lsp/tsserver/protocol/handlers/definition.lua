@@ -10,7 +10,9 @@ local definition_request_handler = function(_, params)
     command = constants.CommandTypes.DefinitionAndBoundSpan,
     arguments = vim.tbl_extend("force", {
       file = vim.uri_to_fname(text_document.uri),
-    }, utils.convert_lsp_position_to_tsserver(params.position)),
+    }, utils.convert_lsp_position_to_tsserver(
+      params.position
+    )),
   }
 end
 

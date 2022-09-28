@@ -1,8 +1,19 @@
-local log = require "vim.lsp.log"
+local api = vim.api
 local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
+local debounce = require("config.lsp.tsserver.utils").debounce
+local config = require "config.lsp.tsserver.config"
 
 local SOURCE = "tsserver"
+
+local CANCEL_AND_RETRIGGER = {
+  constants.CommandTypes.Open,
+  constants.CommandTypes.Change,
+  constants.CommandTypes.UpdateOpen,
+  constants.CommandTypes.Close,
+  constants.CommandTypes.CompletionInfo,
+  constants.CommandTypes.CompletionDetails,
+}
 
 local severity_map = {
   suggestion = constants.DiagnosticSeverity.Hint,
@@ -10,54 +21,180 @@ local severity_map = {
   error = constants.DiagnosticSeverity.Error,
 }
 
--- TODO: add cleanup while before server restart
-local DiagnosticsService = {
-  tracked_request = nil,
-  diagnostics_cache = {},
-}
+vim.tbl_add_reverse_lookup(CANCEL_AND_RETRIGGER)
 
-function DiagnosticsService:new(server_name)
-  local tbl = {}
-  setmetatable(tbl, self)
+--- @class DiagnosticsService
+--- @field server_type string
+--- @field tsserver TsserverInstance
+--- @field pending number|nil
+--- @field diagnostics_cache table
+--- @field dispatchers table
+--- @field debounced_request function
+--- @field timer_handle table
+
+--- @class DiagnosticsService
+local DiagnosticsService = {}
+
+--- @param server_type string
+--- @param tsserver TsserverInstance
+--- @param dispatchers table
+function DiagnosticsService:new(server_type, tsserver, dispatchers)
+  local obj = {
+    server_type = server_type,
+    tsserver = tsserver,
+    pending = nil,
+    diagnostics_cache = {},
+    dispatchers = dispatchers,
+  }
+
+  setmetatable(obj, self)
   self.__index = self
-  self.server_name = server_name
 
-  return tbl
-end
+  if config.publish_diagnostic_on == config.PUBLISH_DIAGNOSTIC_ON.INSERT_LEAVE then
+    local augroup = api.nvim_create_augroup("TsserverDiagnosticsGroup", { clear = true })
+    api.nvim_create_autocmd({ "InsertLeave", "TextChanged" }, {
+      pattern = { "*.js", "*.mjs", "*.jsx", "*.ts", "*.tsx", "*.mts" },
+      callback = function()
+        obj:request()
+      end,
+      group = augroup,
+    })
+  end
 
-function DiagnosticsService:_request_diagnostics(encode_and_send)
-  local client = vim.lsp.get_active_clients({ name = self.server_name })[1]
+  obj.debounced_request, obj.timer_handle = debounce(200, function()
+    local attached_bufs = obj:get_attached_buffers()
 
-  if client then
-    vim.schedule(function()
-      local attached_bufs = {}
+    if #attached_bufs <= 0 then
+      return
+    end
 
-      for _, bufnr in pairs(vim.api.nvim_list_bufs()) do
-        if vim.lsp.buf_is_attached(bufnr, client.id) then
-          table.insert(attached_bufs, vim.api.nvim_buf_get_name(bufnr))
-        end
-      end
+    obj:cancel()
 
-      if #attached_bufs <= 0 then
-        return
-      end
-
-      for _, file in pairs(attached_bufs) do
-        self.diagnostics_cache[file] = {}
-      end
-
-      -- TODO: maybe requests need some debounce but it need more testing
-      self.tracked_request = encode_and_send {
+    obj.tsserver.request_queue:enqueue {
+      message = {
         command = constants.CommandTypes.Geterr,
         arguments = {
           delay = 0,
           files = attached_bufs,
         },
-      }
-    end)
+      },
+      -- INFO: use async only in single server mode
+      is_async = obj.server_type == constants.ServerCompositeType.Primary,
+    }
+
+    if obj.tsserver.request_queue:is_empty() then
+      obj.tsserver:send_queued_requests()
+    end
+  end)
+
+  return obj
+end
+
+--- @private
+function DiagnosticsService:request()
+  if self.server_type ~= constants.ServerCompositeType.Diagnostics then
+    return
+  end
+
+  self.debounced_request()
+end
+
+--- @private
+--- @return string[]
+function DiagnosticsService:get_attached_buffers()
+  local client = vim.lsp.get_active_clients({ name = "tsserver_nvim" })[1]
+
+  if client then
+    local attached_bufs = {}
+
+    for _, bufnr in pairs(vim.api.nvim_list_bufs()) do
+      if vim.lsp.buf_is_attached(bufnr, client.id) then
+        table.insert(attached_bufs, vim.api.nvim_buf_get_name(bufnr))
+      end
+    end
+
+    return attached_bufs
+  end
+
+  return {}
+end
+
+--- @private
+function DiagnosticsService:cancel()
+  self.tsserver.request_queue:clear_geterrs()
+
+  if self.pending ~= nil then
+    self.tsserver.rpc:cancel(self.pending)
+    self.pending = nil
   end
 end
 
+--- @param message table
+--- @return "open"|"change"|"close"
+local function get_update_type(message)
+  local command = message.command
+
+  if
+    command == constants.CommandTypes.Open
+    or command == constants.CommandTypes.Change
+    or command == constants.CommandTypes.Close
+  then
+    return command
+  end
+
+  if command == constants.CommandTypes.UpdateOpen then
+    local args = message.arguments
+
+    if #args.openFiles > 0 then
+      return "open"
+    elseif #args.changedFiles > 0 then
+      return "change"
+    else
+      -- INFO: it is impossible to send all empty lists of changes
+      return "close"
+    end
+  end
+end
+
+--- @private
+--- @param files string[]
+function DiagnosticsService:clear_cache(files)
+  self.diagnostics_cache = {}
+
+  for _, buf in pairs(files) do
+    self.diagnostics_cache[buf] = {}
+  end
+end
+
+--- @param seq number|nil
+--- @param message table
+function DiagnosticsService:handle_request(seq, message)
+  local command = message.command
+
+  if CANCEL_AND_RETRIGGER[command] then
+    self:cancel()
+  end
+
+  local update_type = get_update_type(message)
+
+  if
+    update_type == "open"
+    or (
+      config.publish_diagnostic_on == config.PUBLISH_DIAGNOSTIC_ON.CHANGE
+      and update_type == "change"
+    )
+  then
+    self:request()
+  end
+
+  if command == constants.CommandTypes.Geterr then
+    self.pending = seq
+    self:clear_cache(message.arguments.files)
+  end
+end
+
+--- @param category number
+--- @return number
 local category_to_severity = function(category)
   local severity = severity_map[category]
   if not severity then
@@ -68,6 +205,9 @@ local category_to_severity = function(category)
   return severity
 end
 
+--- @private
+--- @param related_information table
+--- @return table
 local convert_related_information = function(related_information)
   return vim.tbl_map(function(info)
     return {
@@ -80,7 +220,9 @@ local convert_related_information = function(related_information)
   end, related_information)
 end
 
-function DiagnosticsService:_collect_diagnostics(response)
+--- @private
+--- @param response table
+function DiagnosticsService:collect_diagnostics(response)
   for _, diagnostic in pairs(response.body.diagnostics) do
     table.insert(self.diagnostics_cache[response.body.file], {
       message = diagnostic.text,
@@ -95,37 +237,46 @@ function DiagnosticsService:_collect_diagnostics(response)
   end
 end
 
-function DiagnosticsService:_publish_diagnostics(response, notification)
-  if self.tracked_request == response.body.request_seq then
-    self.tracked_request = nil
-
+--- @private
+--- @param response table
+function DiagnosticsService:publish_diagnostics(response)
+  if self.pending == response.body.request_seq then
     vim.schedule(function()
       for file, diagnostics in pairs(self.diagnostics_cache) do
-        notification(constants.LspMethods.PublishDiagnostics, {
+        self.dispatchers.notification(constants.LspMethods.PublishDiagnostics, {
           uri = vim.uri_from_fname(file),
           diagnostics = diagnostics,
         })
       end
     end)
+
+    self.pending = nil
   end
 end
 
-function DiagnosticsService:setup_event_emitter(event_emitter, encode_and_send, notification)
-  event_emitter:add_listener(constants.CommandTypes.UpdateOpen, function()
-    self:_request_diagnostics(encode_and_send)
-  end)
+--- @param response table
+function DiagnosticsService:handle_response(response)
+  local event = response.event
 
-  event_emitter:add_listener({
-    constants.DiagnosticEventKind.SyntaxDiag,
-    constants.DiagnosticEventKind.SemanticDiag,
-    constants.DiagnosticEventKind.SuggestionDiag,
-  }, function(response)
-    self:_collect_diagnostics(response)
-  end)
+  if
+    event == constants.DiagnosticEventKind.SyntaxDiag
+    or event == constants.DiagnosticEventKind.SemanticDiag
+    or event == constants.DiagnosticEventKind.SyntaxDiag
+  then
+    self:collect_diagnostics(response)
+  end
 
-  event_emitter:add_listener(constants.RequestCompletedEventName, function(response)
-    self:_publish_diagnostics(response, notification)
-  end)
+  if event == constants.RequestCompletedEventName then
+    self:publish_diagnostics(response)
+  end
+
+  if CANCEL_AND_RETRIGGER[response.command] then
+    self:request()
+  end
+end
+
+function DiagnosticsService:dispose()
+  self.timer_handle:close()
 end
 
 return DiagnosticsService

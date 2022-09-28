@@ -43,6 +43,11 @@ end
 
 M.tsserver_docs_to_plain_text = function(parts, delim, tag_formatting)
   delim = delim or ""
+
+  if type(parts) == "string" then
+    return parts
+  end
+
   return table.concat(vim.tbl_map(function(it)
     if tag_formatting and it.kind == "parameterName" then
       return "`" .. it.text .. "`"

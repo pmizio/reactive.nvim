@@ -17,7 +17,11 @@ local completion_request_handler = function(_, params)
       triggerCharacter = vim.tbl_contains(constants.CompletionsTriggerCharacter, trigger_character)
           and trigger_character
         or nil,
-    }, utils.convert_lsp_position_to_tsserver(params.position)),
+      includeExternalModuleExports = true,
+      includeInsertTextCompletions = true,
+    }, utils.convert_lsp_position_to_tsserver(
+      params.position
+    )),
   }
 end
 
@@ -42,37 +46,40 @@ local completion_response_handler = function(_, body, request_params)
 
   local file = vim.uri_to_fname(request_params.textDocument.uri)
 
-  return vim.tbl_map(function(item)
-    local is_optional = string.find(item.kindModifiers, "optional", 1, true)
-    local is_deprecated = string.find(item.kindModifiers, "deprecated", 1, true)
-    local insertText = item.insertText or item.name
-    local kind = item_kind_utils.map_completion_item_kind(item.kind)
+  return {
+    isIncomplete = body.isIncomplete or false,
+    items = vim.tbl_map(function(item)
+      local is_optional = string.find(item.kindModifiers, "optional", 1, true)
+      local is_deprecated = string.find(item.kindModifiers, "deprecated", 1, true)
+      local insertText = item.insertText or item.name
+      local kind = item_kind_utils.map_completion_item_kind(item.kind)
 
-    return {
-      label = is_optional and (item.name .. "?") or item.name,
-      labelDetails = item.labelDetails,
-      insertText = insertText,
-      filterText = insertText,
-      commitCharacters = item_kind_utils.calculate_commit_characters(kind),
-      kind = kind,
-      insertTextFormat = item.isSnippet and constants.InsertTextFormat.Snippet
-        or constants.InsertTextFormat.PlainText,
-      sortText = item.sortText,
-      textEdit = calculate_text_edit(item.replacementSpan, insertText),
-      -- for now lsp support only one tag - deprecated - 1
-      tags = is_deprecated and { 1 } or nil,
-      data = vim.tbl_extend("force", {
-        file = file,
-        entryNames = {
-          (item.source or item.data) and {
-            name = { item.name },
-            source = item.source,
-            data = item.data,
-          } or item.name,
-        },
-      }, request_params.position),
-    }
-  end, body.entries or {})
+      return {
+        label = is_optional and (item.name .. "?") or item.name,
+        labelDetails = item.labelDetails,
+        insertText = insertText,
+        filterText = insertText,
+        commitCharacters = item_kind_utils.calculate_commit_characters(kind),
+        kind = kind,
+        insertTextFormat = item.isSnippet and constants.InsertTextFormat.Snippet
+          or constants.InsertTextFormat.PlainText,
+        sortText = item.sortText,
+        textEdit = calculate_text_edit(item.replacementSpan, insertText),
+        -- for now lsp support only one tag - deprecated - 1
+        tags = is_deprecated and { 1 } or nil,
+        data = vim.tbl_extend("force", {
+          file = file,
+          entryNames = {
+            (item.source or item.data) and {
+              name = { item.name },
+              source = item.source,
+              data = item.data,
+            } or item.name,
+          },
+        }, request_params.position),
+      }
+    end, body.entries or {}),
+  }
 end
 
 return {

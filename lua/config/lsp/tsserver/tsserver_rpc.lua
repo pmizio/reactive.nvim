@@ -1,6 +1,10 @@
 local uv = vim.loop
+local log = require "vim.lsp.log"
+local Path = require "plenary.path"
 
 local is_win = uv.os_uname().version:find "Windows"
+
+local CANCELLATION_PREFIX = "seq_"
 
 ---@class TsserverRpc
 ---@field stdin table
@@ -8,28 +12,68 @@ local is_win = uv.os_uname().version:find "Windows"
 ---@field stderr table
 ---@field spawn_args table
 ---@field handle table|nil
+---@field cancellation_file string|nil
 
 ---@class TsserverRpc
-local TsserverRpc = {
-  stdin = uv.new_pipe(false),
-  stdout = uv.new_pipe(false),
-  stderr = uv.new_pipe(false),
-  handle = nil,
-}
+local TsserverRpc = {}
 
 --- @param path table Plenary path object
+--- @param server_type string
 --- @return table
-function TsserverRpc:new(path)
-  local o = {}
-  setmetatable(o, self)
+function TsserverRpc:new(path, server_type)
+  local obj = {
+    stdin = uv.new_pipe(false),
+    stdout = uv.new_pipe(false),
+    stderr = uv.new_pipe(false),
+    handle = nil,
+  }
+
+  setmetatable(obj, self)
   self.__index = self
-  self.spawn_args = {
-    args = { path:absolute(), "--stdio" },
-    stdio = { self.stdin, self.stdout, self.stderr },
+
+  local tsserver_bin = path:absolute()
+  local cmd = { tsserver_bin }
+
+  if is_win then
+    cmd = { "cmd.exe", "/C", "node", tsserver_bin }
+  end
+
+  obj.spawn_args = {
+    args = cmd,
+    stdio = { obj.stdin, obj.stdout, obj.stderr },
     detached = not is_win,
   }
 
-  return o
+  obj:add_spawn_arg "--stdio"
+  obj:add_spawn_arg "--useInferredProjectPerProjectRoot"
+  obj:add_spawn_arg(
+    "--logFile",
+    "/Users/pawel.mizio/.config/nvim/tsserver_" .. server_type .. ".log"
+  )
+  obj:add_spawn_arg("--logVerbosity", "verbose")
+  obj:add_spawn_arg("--locale", "en")
+  obj:add_spawn_arg "--validateDefaultNpmLocation"
+  obj:add_spawn_arg "--noGetErrOnBackgroundUpdate"
+
+  local cancellation_dir = uv.fs_mkdtemp(uv.os_tmpdir() .. "/tsserver_nvim_XXXXXX")
+
+  if cancellation_dir then
+    obj.cancellation_file = Path:new(cancellation_dir, CANCELLATION_PREFIX):absolute()
+
+    obj:add_spawn_arg("--cancellationPipeName", obj.cancellation_file .. "*")
+  end
+
+  return obj
+end
+
+--- @param arg string
+--- @param value string|nil
+function TsserverRpc:add_spawn_arg(arg, value)
+  table.insert(self.spawn_args.args, arg)
+
+  if value ~= nil then
+    table.insert(self.spawn_args.args, value)
+  end
 end
 
 --- @return boolean
@@ -131,6 +175,13 @@ function TsserverRpc:write(message)
   self.stdin:write(vim.json.encode(message))
   -- this flush request to tsserver
   self.stdin:write "\r\n"
+end
+
+--- @param seq number
+function TsserverRpc:cancel(seq)
+  assert(self.cancellation_file, "Cancellation pipe wasn't created, cannot cancel request!")
+
+  Path:new(self.cancellation_file .. seq):touch { mode = 438 }
 end
 
 --- @return boolean

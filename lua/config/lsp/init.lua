@@ -118,6 +118,11 @@ require "config.lsp.diagnostics"
 if vim.g.tsls == 1 then
   local ok, tsserver_nvim = pcall(require, "config.lsp.tsserver")
   if ok then
-    tsserver_nvim.setup(on_attach)
+    tsserver_nvim.setup {
+      on_attach = on_attach,
+      settings = {
+        composite_mode = "separate_diagnostic",
+      },
+    }
   end
 end

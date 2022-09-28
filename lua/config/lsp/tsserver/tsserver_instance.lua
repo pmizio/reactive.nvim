@@ -3,39 +3,51 @@ local schedule_wrap = vim.schedule_wrap
 local log = require "vim.lsp.log"
 local constants = require "config.lsp.tsserver.protocol.constants"
 local TsserverRpc = require "config.lsp.tsserver.tsserver_rpc"
-local initialize = require "config.lsp.tsserver.protocol.handlers.initialize"
+local RequestQueue = require "config.lsp.tsserver.request_queue"
+local global_initialize = require "config.lsp.tsserver.protocol.handlers.initialize"
+local file_initialize = require "config.lsp.tsserver.protocol.handlers.did_open"
 local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
+local DiagnosticsService = require "config.lsp.tsserver.protocol.diagnostics"
 
 --- @class TsserverInstance
---- @field rpc TsserverRpc|nil
+--- @field rpc TsserverRpc
 --- @field seq number
---- @field pending number|nil
---- @field message_queue table
---- @field request_args table
+--- @field server_type string
+--- @field request_queue RequestQueue
+--- @field pending_responses table
+--- @field request_metadata table
+--- @field diagnostics_service DiagnosticsService
 
 --- @class TsserverInstance
-local TsserverInstance = {
-  seq = 0,
-  pending = nil,
-  message_queue = {},
-  request_args = {},
-}
+local TsserverInstance = {}
 
 --- @param path table Plenary path object
+--- @param server_type string
+--- @param dispachers table
 --- @return TsserverInstance
-function TsserverInstance:new(path)
-  local o = {}
-  setmetatable(o, self)
+function TsserverInstance:new(path, server_type, dispachers)
+  local obj = {
+    rpc = TsserverRpc:new(path, server_type),
+    seq = 0,
+    server_type = server_type,
+    request_queue = RequestQueue:new(),
+    pending_responses = {},
+    request_metadata = {},
+  }
+
+  obj.diagnostics_service = DiagnosticsService:new(server_type, obj, dispachers)
+
+  setmetatable(obj, self)
   self.__index = self
-  self.rpc = TsserverRpc:new(path)
-  if self.rpc:spawn() then
-    self.rpc:on_message(function(message)
-      self:handle_response(message)
+
+  if obj.rpc:spawn() then
+    obj.rpc:on_message(function(message)
+      obj:handle_response(message)
     end)
   end
 
-  return o
+  return obj
 end
 
 --- @private
@@ -46,99 +58,54 @@ function TsserverInstance:handle_response(message)
     log.error("Invalid json: ", response)
     return
   end
-  log.warn(">>>>>" .. message)
 
+  local request_seq = (type(response.body) == "table" and response.body.request_seq)
+      and response.body.request_seq
+    or response.request_seq
   local handler = response_handlers[response.command]
-  local request_seq = response.request_seq
-  local request_args = self.request_args[request_seq]
 
-  if request_args then
-    if request_args.notify_reply_callback then
-      request_args.notify_reply_callback(request_seq)
-    end
+  if handler and self.pending_responses[request_seq] then
+    local request_data = self.request_metadata[request_seq]
+    local request_params = request_data.params
+    local callback = request_data.callback
+    local notify_reply_callback = request_data.notify_reply_callback
 
-    local callback = request_args.callback
-
-    if response.type == "response" and handler and callback then
+    if response.success then
       local status, result = pcall(
         handler,
         response.command,
         response.body or response,
-        request_args.params
+        request_params
       )
 
-      if not status then
-        callback(result, response)
+      if notify_reply_callback then
+        notify_reply_callback(request_seq)
       end
 
-      if result then
-        callback(nil, result)
+      if callback then
+        if status then
+          callback(nil, result)
+        else
+          callback(result, response)
+        end
       end
+    else
+      vim.schedule(function()
+        vim.notify(response.message or "No information available.", log.levels.INFO)
+      end)
     end
+
+    self.pending_responses[request_seq] = nil
+    self.request_metadata[request_seq] = nil
   end
 
-  if self.pending == request_seq then
-    self.pending = nil
+  if not handler and self.pending_responses[request_seq] then
+    self.pending_responses[request_seq] = nil
   end
 
-  if request_args then
-    self.request_args[request_seq] = nil
-  end
+  self.diagnostics_service:handle_response(response)
 
-  while not self.pending and #self.message_queue > 0 do
-    local args = self:dequeue()
-
-    if args then
-      self:handle_request(
-        args.method,
-        args.params,
-        args.callback,
-        args.notify_reply_callback,
-        args.is_async
-      )
-    end
-  end
-end
-
---- @private
---- @param message table
---- @param is_async boolean|nil
---- @return number
-function TsserverInstance:write(message, is_async)
-  local full_message = vim.tbl_extend("force", {
-    seq = self.seq,
-    type = "request",
-  }, message)
-
-  self.rpc:write(full_message)
-
-  local tmp_seq = self.seq
-
-  self.seq = self.seq + 1
-
-  if not is_async then
-    self.pending = tmp_seq
-  end
-
-  return tmp_seq
-end
-
---- @private
---- @param message table
-function TsserverInstance:enqueue(message)
-  table.insert(self.message_queue, message)
-end
-
---- @private
---- @return table
-function TsserverInstance:dequeue()
-  local message = self.message_queue[1]
-
-  if message then
-    table.remove(self.message_queue, 1)
-  end
-
-  return message
+  self:send_queued_requests()
 end
 
 --- @private
@@ -155,32 +122,65 @@ function TsserverInstance:handle_request(method, params, callback, notify_reply_
     local scheduled_notify_reply_callback = notify_reply_callback
         and schedule_wrap(notify_reply_callback)
       or nil
+    local message = tsserver_request(
+      method,
+      params,
+      scheduled_callback,
+      scheduled_notify_reply_callback
+    )
 
     local args = {
-      method = method,
-      params = params or {},
+      message = message,
+      params = params,
       callback = scheduled_callback,
       notify_reply_callback = scheduled_notify_reply_callback,
       is_async = is_async,
+      priority = self.request_queue:get_queueing_type(message.command, nil),
     }
 
-    if pending then
-      self:enqueue(args)
-    else
-      local message = tsserver_request(
-        method,
-        params,
-        scheduled_callback,
-        scheduled_notify_reply_callback
-      )
+    self.request_queue:enqueue(args)
+  end
 
-      self.request_args[self.seq] = args
-      self:write(message, is_async)
+  self:send_queued_requests()
+end
+
+function TsserverInstance:send_queued_requests()
+  while vim.tbl_isempty(self.pending_responses) and self.request_queue:is_empty() do
+    local item = self.request_queue:dequeue()
+
+    if item then
+      self:send_request(item)
     end
   end
 end
 
----@returns Methods:
+function TsserverInstance:send_request(message_container)
+  local seq = self.seq
+  self.request_metadata[seq] = message_container
+
+  if not message_container.is_async then
+    self.pending_responses[seq] = true
+  end
+
+  self.diagnostics_service:handle_request(seq, message_container.message)
+
+  self:write(message_container.message)
+
+  self.seq = seq + 1
+end
+
+--- @private
+--- @param message table
+function TsserverInstance:write(message)
+  local full_message = vim.tbl_extend("force", {
+    seq = self.seq,
+    type = "request",
+  }, message)
+
+  self.rpc:write(full_message)
+end
+
+--- @returns Methods:
 --- - `notify()` |vim.lsp.rpc.notify()|
 --- - `request()` |vim.lsp.rpc.request()|
 --- - `is_closing()` returns a boolean indicating if the RPC is closing.
@@ -188,21 +188,29 @@ end
 function TsserverInstance:get_lsp_interface()
   return {
     request = function(method, params, callback, notify_reply_callback)
-      P("request: " .. method)
+      P("request(" .. self.server_type .. "): " .. method)
       if method == constants.LspMethods.Initialize then
-        self:write(initialize.configure())
+        self.request_queue:enqueue { message = global_initialize.configure() }
       end
 
       self:handle_request(method, params, callback, notify_reply_callback)
     end,
     notify = function(method, params, ...)
-      P("notify: " .. method)
+      P("notify(" .. self.server_type .. "): " .. method)
+
       self:handle_request(method, params, ...)
+
+      if method == constants.LspMethods.DidOpen then
+        self.request_queue:enqueue { message = file_initialize.configure(params) }
+      end
+
+      return true
     end,
     is_closing = function()
       return self.rpc:is_closing()
     end,
     terminate = function()
+      self.diagnostics_service:dispose()
       self.rpc:terminate()
     end,
   }

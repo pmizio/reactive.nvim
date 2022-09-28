@@ -13,7 +13,9 @@ local completion_request_handler = function(_, params)
         file = data.file,
         entryNames = data.entryNames,
         source = data.source,
-      }, utils.convert_lsp_position_to_tsserver(data)),
+      }, utils.convert_lsp_position_to_tsserver(
+        data
+      )),
     }
   end
 

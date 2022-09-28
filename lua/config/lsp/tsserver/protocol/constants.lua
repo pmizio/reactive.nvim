@@ -1,4 +1,8 @@
 return {
+  ServerCompositeType = {
+    Primary = "primary",
+    Diagnostics = "diagnostics",
+  },
   CommandTypes = {
     JsxClosingTag = "jsxClosingTag",
     Brace = "brace",
