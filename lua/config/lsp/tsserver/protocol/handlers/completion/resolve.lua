@@ -1,9 +1,9 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
--- tsserver protocol reference
+-- tsserver protocol reference:
 -- https://github.com/microsoft/TypeScript/blob/549e61d0af1ba885be29d69f341e7d3a00686071/lib/protocol.d.ts#L1661
-local completion_request_handler = function(_, params)
+local completion_resolve_request_handler = function(_, params)
   local data = params.data
 
   if type(data) == "table" then
@@ -46,7 +46,9 @@ local make_text_edits = function(code_actions)
   return text_edits
 end
 
-local completion_response_handler = function(_, body, request_params)
+-- tsserver protocol reference:
+-- https://github.com/microsoft/TypeScript/blob/9a83f2551ded0d88a0ba0ec9af260f83eb3568cd/lib/protocol.d.ts#L1841
+local completion_resolve_response_handler = function(_, body, request_params)
   if body and body[1] then
     local details = body[1]
 
@@ -59,7 +61,7 @@ local completion_response_handler = function(_, body, request_params)
       },
       additionalTextEdits = make_text_edits(details.codeActions),
       -- INFO: there is also `command` prop but I don't know there is usecase for that here,
-      -- or neovim even handle than for now i skip this
+      -- or neovim even handle that for now i skip this
     })
   end
 
@@ -69,10 +71,10 @@ end
 return {
   request = {
     method = constants.LspMethods.CompletionResolve,
-    handler = completion_request_handler,
+    handler = completion_resolve_request_handler,
   },
   response = {
     method = constants.CommandTypes.CompletionDetails,
-    handler = completion_response_handler,
+    handler = completion_resolve_response_handler,
   },
 }

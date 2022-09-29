@@ -1,9 +1,6 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
--- tsserver protocol reference:
--- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L1305
-
 local convert_text_changes = function(file, content_changes)
   local reversed_content_changes = {}
 
@@ -26,6 +23,8 @@ local convert_text_changes = function(file, content_changes)
   }
 end
 
+-- tsserver protocol reference:
+-- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L1305
 local change_request_handler = function(_, params)
   local text_document = params.textDocument
   local content_changes = params.contentChanges

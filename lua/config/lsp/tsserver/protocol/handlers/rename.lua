@@ -3,7 +3,6 @@ local utils = require "config.lsp.tsserver.protocol.utils"
 
 -- tsserver protocol reference:
 -- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L930
-
 local rename_request_handler = function(_, params)
   local text_document = params.textDocument
 
@@ -14,12 +13,14 @@ local rename_request_handler = function(_, params)
       -- TODO: expose as options
       findInComments = false,
       findInStrings = false,
-    }, utils.convert_lsp_position_to_tsserver(params.position)),
+    }, utils.convert_lsp_position_to_tsserver(
+      params.position
+    )),
   }
 end
 
--- tsserver protocol reference: https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L993
-
+-- tsserver protocol reference:
+-- https://github.com/microsoft/TypeScript/blob/29cbfe9a2504cfae30bae938bdb2be6081ccc5c8/lib/protocol.d.ts#L993
 local formatNewName = function(newText, loc)
   local buf = { newText }
 

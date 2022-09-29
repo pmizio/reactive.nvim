@@ -9,6 +9,7 @@ local file_initialize = require "config.lsp.tsserver.protocol.handlers.did_open"
 local request_handlers = require("config.lsp.tsserver.protocol").request_handlers
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
 local DiagnosticsService = require "config.lsp.tsserver.protocol.diagnostics"
+local ProjectLoadService = require "config.lsp.tsserver.protocol.project_load"
 
 --- @class TsserverInstance
 --- @field rpc TsserverRpc
@@ -18,6 +19,7 @@ local DiagnosticsService = require "config.lsp.tsserver.protocol.diagnostics"
 --- @field pending_responses table
 --- @field request_metadata table
 --- @field diagnostics_service DiagnosticsService
+--- @field project_load_service ProjectLoadService
 
 --- @class TsserverInstance
 local TsserverInstance = {}
@@ -37,6 +39,7 @@ function TsserverInstance:new(path, server_type, dispachers)
   }
 
   obj.diagnostics_service = DiagnosticsService:new(server_type, obj, dispachers)
+  obj.project_load_service = ProjectLoadService:new(dispachers)
 
   setmetatable(obj, self)
   self.__index = self
@@ -104,6 +107,7 @@ function TsserverInstance:handle_response(message)
   end
 
   self.diagnostics_service:handle_response(response)
+  self.project_load_service:handler_event(response)
 
   self:send_queued_requests()
 end

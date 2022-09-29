@@ -2,7 +2,7 @@ local constants = require "config.lsp.tsserver.protocol.constants"
 local item_kind_utils = require "config.lsp.tsserver.protocol.handlers.completion.item_kind_utils"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
--- tsserver protocol reference
+-- tsserver protocol reference:
 -- https//github.com/microsoft/TypeScript/blob/8b482b513d87c6fcda8ece18b99f8a01cff5c605/lib/protocol.d.ts#L1631
 local completion_request_handler = function(_, params)
   local text_document = params.textDocument
@@ -25,6 +25,8 @@ local completion_request_handler = function(_, params)
   }
 end
 
+-- tsserver protocol reference:
+-- https://github.com/microsoft/TypeScript/blob/9a83f2551ded0d88a0ba0ec9af260f83eb3568cd/lib/protocol.d.ts#L1824
 local calculate_text_edit = function(replacement_span, newText)
   if not replacement_span then
     return nil

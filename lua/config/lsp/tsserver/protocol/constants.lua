@@ -178,6 +178,11 @@ return {
     PublishDiagnostics = "textDocument/publishDiagnostics",
     Hover = "textDocument/hover",
     Definition = "textDocument/definition",
+    Progress = "$/progress",
+  },
+  TsserverEvents = {
+    ProjectLoadingStart = "projectLoadingStart",
+    ProjectLoadingFinish = "projectLoadingFinish",
   },
   CompletionItemKind = {
     Text = 1,
