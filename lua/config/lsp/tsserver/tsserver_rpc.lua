@@ -7,6 +7,7 @@ local is_win = uv.os_uname().version:find "Windows"
 local CANCELLATION_PREFIX = "seq_"
 
 ---@class TsserverRpc
+---@field on_exit function
 ---@field stdin table
 ---@field stdout table
 ---@field stderr table
@@ -20,8 +21,9 @@ local TsserverRpc = {}
 --- @param path table Plenary path object
 --- @param server_type string
 --- @return table
-function TsserverRpc:new(path, server_type)
+function TsserverRpc:new(path, server_type, on_exit)
   local obj = {
+    on_exit = on_exit,
     stdin = uv.new_pipe(false),
     stdout = uv.new_pipe(false),
     stderr = uv.new_pipe(false),
@@ -78,8 +80,12 @@ end
 
 --- @return boolean
 function TsserverRpc:spawn()
-  local handle, pid = uv.spawn("node", self.spawn_args, function()
+  local handle, pid = uv.spawn("node", self.spawn_args, function(code, signal)
     self:close_pipes()
+
+    if self.on_exit then
+      self.on_exit(code, signal)
+    end
   end)
   self.handle = handle
 

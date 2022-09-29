@@ -169,6 +169,7 @@ return {
   RequestCompletedEventName = "requestCompleted",
   LspMethods = {
     Initialize = "initialize",
+    Shutdown = "shutdown",
     DidOpen = "textDocument/didOpen",
     DidClose = "textDocument/didClose",
     DidChange = "textDocument/didChange",

@@ -12,6 +12,7 @@ local DIAGNOSTICS_ALLOWED = {
   constants.LspMethods.DidOpen,
   constants.LspMethods.DidChange,
   constants.LspMethods.DidClose,
+  constants.LspMethods.Shutdown,
 }
 
 vim.tbl_add_reverse_lookup(DIAGNOSTICS_ALLOWED)

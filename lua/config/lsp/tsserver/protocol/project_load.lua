@@ -10,13 +10,13 @@ local TOKEN = "TSSERVER_LOADING"
 --- @class ProjectLoadService
 local ProjectLoadService = {
   instance = nil,
-  loadings_in_progress = 0,
 }
 
 --- @param dispatchers table
 function ProjectLoadService:new(dispatchers)
   if not self.instance then
     self.instance = {}
+    self.loadings_in_progress = 0
     self.dispatchers = dispatchers
 
     setmetatable(self.instance, self)
@@ -27,7 +27,7 @@ function ProjectLoadService:new(dispatchers)
 end
 
 --- @private
---- @param event "begin"|"end"
+--- @param event "begin"|"report"|"end"
 --- @param message string|nil
 function ProjectLoadService:send_progress(event, message)
   vim.schedule(function()
@@ -48,12 +48,21 @@ function ProjectLoadService:handler_event(response)
   if event == constants.TsserverEvents.ProjectLoadingStart then
     self.loadings_in_progress = self.loadings_in_progress + 1
     self:send_progress("begin", "Loading project")
+    self:send_progress "report"
   elseif event == constants.TsserverEvents.ProjectLoadingFinish then
     self.loadings_in_progress = self.loadings_in_progress - 1
 
     if self.loadings_in_progress <= 0 then
       self:send_progress "end"
     end
+  end
+end
+
+function ProjectLoadService:dispose()
+  ProjectLoadService.instance = nil
+
+  if self.loadings_in_progress > 0 then
+    self:send_progress "end"
   end
 end
 

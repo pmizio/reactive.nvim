@@ -30,7 +30,6 @@ local TsserverInstance = {}
 --- @return TsserverInstance
 function TsserverInstance:new(path, server_type, dispachers)
   local obj = {
-    rpc = TsserverRpc:new(path, server_type),
     seq = 0,
     server_type = server_type,
     request_queue = RequestQueue:new(),
@@ -38,6 +37,10 @@ function TsserverInstance:new(path, server_type, dispachers)
     request_metadata = {},
   }
 
+  obj.rpc = TsserverRpc:new(path, server_type, function(...)
+    obj:on_exit()
+    dispachers.on_exit(...)
+  end)
   obj.diagnostics_service = DiagnosticsService:new(server_type, obj, dispachers)
   obj.project_load_service = ProjectLoadService:new(dispachers)
 
@@ -51,6 +54,11 @@ function TsserverInstance:new(path, server_type, dispachers)
   end
 
   return obj
+end
+
+function TsserverInstance:on_exit()
+  self.diagnostics_service:dispose()
+  self.project_load_service:dispose()
 end
 
 --- @private
