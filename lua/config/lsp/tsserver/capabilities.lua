@@ -32,6 +32,7 @@ local capabilities = {
   },
   hoverProvider = true,
   definitionProvider = true,
+  referencesProvider = true,
 }
 
 return capabilities

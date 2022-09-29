@@ -21,6 +21,7 @@ local make_protocol_handlers = function()
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.completion.resolve")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.hover")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.definition")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.references")
 
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.shutdown")
 

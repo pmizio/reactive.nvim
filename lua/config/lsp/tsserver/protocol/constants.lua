@@ -179,6 +179,7 @@ return {
     PublishDiagnostics = "textDocument/publishDiagnostics",
     Hover = "textDocument/hover",
     Definition = "textDocument/definition",
+    Reference = "textDocument/references",
     Progress = "$/progress",
   },
   TsserverEvents = {
