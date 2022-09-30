@@ -62,7 +62,6 @@ function RequestQueue:clear_geterrs()
     local el = self.queue[i]
 
     if el.message.command == constants.CommandTypes.Geterr then
-      P("Cancelled req: " .. i)
       table.remove(self.queue, i)
     end
   end

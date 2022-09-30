@@ -124,6 +124,7 @@ if vim.g.tsls == 1 then
       on_attach = on_attach,
       settings = {
         composite_mode = "separate_diagnostic",
+        -- debug = true,
         -- tsserver_logs = {
         --   verbosity = "verbose",
         --   file_basename = "/Users/pawel.mizio/.config/nvim/tsserver_",

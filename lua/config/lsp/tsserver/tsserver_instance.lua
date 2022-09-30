@@ -2,6 +2,7 @@ local schedule_wrap = vim.schedule_wrap
 
 local log = require "vim.lsp.log"
 local constants = require "config.lsp.tsserver.protocol.constants"
+local config = require "config.lsp.tsserver.config"
 local TsserverRpc = require "config.lsp.tsserver.tsserver_rpc"
 local RequestQueue = require "config.lsp.tsserver.request_queue"
 local global_initialize = require "config.lsp.tsserver.protocol.handlers.initialize"
@@ -200,7 +201,10 @@ end
 function TsserverInstance:get_lsp_interface()
   return {
     request = function(method, params, callback, notify_reply_callback)
-      P("request(" .. self.server_type .. "): " .. method)
+      if config.debug then
+        vim.notify("request(" .. self.server_type .. "): " .. method, log.levels.INFO)
+      end
+
       if method == constants.LspMethods.Initialize then
         self.request_queue:enqueue { message = global_initialize.configure() }
       end
@@ -208,7 +212,9 @@ function TsserverInstance:get_lsp_interface()
       self:handle_request(method, params, callback, notify_reply_callback)
     end,
     notify = function(method, params, ...)
-      P("notify(" .. self.server_type .. "): " .. method)
+      if config.debug then
+        vim.notify("notify(" .. self.server_type .. "): " .. method, log.levels.INFO)
+      end
 
       self:handle_request(method, params, ...)
 
