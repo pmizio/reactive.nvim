@@ -1,6 +1,7 @@
 local uv = vim.loop
 local log = require "vim.lsp.log"
 local Path = require "plenary.path"
+local config = require "config.lsp.tsserver.config"
 
 local is_win = uv.os_uname().version:find "Windows"
 
@@ -47,13 +48,8 @@ function TsserverRpc:new(path, server_type, on_exit)
   }
 
   obj:add_spawn_arg "--stdio"
-  obj:add_spawn_arg "--useInferredProjectPerProjectRoot"
-  obj:add_spawn_arg(
-    "--logFile",
-    "/Users/pawel.mizio/.config/nvim/tsserver_" .. server_type .. ".log"
-  )
-  obj:add_spawn_arg("--logVerbosity", "verbose")
   obj:add_spawn_arg("--locale", "en")
+  obj:add_spawn_arg "--useInferredProjectPerProjectRoot"
   obj:add_spawn_arg "--validateDefaultNpmLocation"
   obj:add_spawn_arg "--noGetErrOnBackgroundUpdate"
 
@@ -63,6 +59,13 @@ function TsserverRpc:new(path, server_type, on_exit)
     obj.cancellation_file = Path:new(cancellation_dir, CANCELLATION_PREFIX):absolute()
 
     obj:add_spawn_arg("--cancellationPipeName", obj.cancellation_file .. "*")
+  end
+
+  local logs = config.tsserver_logs
+
+  if logs then
+    obj:add_spawn_arg("--logVerbosity", logs.verbosity)
+    obj:add_spawn_arg("--logFile", logs.file_basename .. server_type .. ".log")
   end
 
   return obj

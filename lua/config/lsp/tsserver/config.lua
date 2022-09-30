@@ -40,6 +40,16 @@ M.load_and_validate = function(settings)
     settings = { settings, "table" },
   }
 
+  local logs = settings.tsserver_logs
+
+  if logs then
+    vim.validate {
+      ["settings.tsserver_logs"] = { logs, "table" },
+      ["settings.tsserver_logs.verbosity"] = { logs.verbosity, "string" },
+      ["settings.tsserver_logs.file_basename"] = { logs.file_basename, "string" },
+    }
+  end
+
   validate_enum(M.COMPOSITE_MODES, "composite_mode", M.COMPOSITE_MODES.SINGLE)
   validate_enum(
     M.PUBLISH_DIAGNOSTIC_ON,

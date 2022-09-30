@@ -63,6 +63,8 @@ lspinstaller.setup {
   automatic_installation = true,
 }
 
+vim.g.tsls = 1
+
 for _, server in pairs(lspinstaller.get_installed_servers()) do
   if server.name == "rust_analyzer" then
     require("rust-tools").setup {
@@ -122,6 +124,10 @@ if vim.g.tsls == 1 then
       on_attach = on_attach,
       settings = {
         composite_mode = "separate_diagnostic",
+        -- tsserver_logs = {
+        --   verbosity = "verbose",
+        --   file_basename = "/Users/pawel.mizio/.config/nvim/tsserver_",
+        -- },
       },
     }
   end
