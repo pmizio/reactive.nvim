@@ -16,23 +16,15 @@ local capabilities = {
       "/",
       "@",
       "<",
-
-      -- Emmet
-      ">",
-      "*",
-      "#",
-      "$",
-      "+",
-      "^",
-      "(",
-      "[",
-      "@",
-      "-",
     },
   },
   hoverProvider = true,
   definitionProvider = true,
   referencesProvider = true,
+  signatureHelpProvider = {
+    triggerCharacters = { "(", ",", "<" },
+    retriggerCharacters = { ")" },
+  },
 }
 
 return capabilities

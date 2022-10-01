@@ -63,8 +63,6 @@ lspinstaller.setup {
   automatic_installation = true,
 }
 
-vim.g.tsls = 1
-
 for _, server in pairs(lspinstaller.get_installed_servers()) do
   if server.name == "rust_analyzer" then
     require("rust-tools").setup {
@@ -84,7 +82,7 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
       },
     }
     lspconfig[server.name].setup(luadev)
-  elseif server.name == "tsserver" and vim.g.tsls == 1 then
+  elseif server.name == "tsserver" and vim.g.tsls ~= 1 then
   else
     lspconfig[server.name].setup(vim.tbl_extend("force", {
       capabilities = require("cmp_nvim_lsp").update_capabilities(
@@ -106,30 +104,30 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
   end
 end
 
-require("lsp_signature").setup {
-  floating_window = true,
-  hint_enable = false,
-}
-
 require("fidget").setup {
   text = { spinner = "moon" },
 }
 
 require "config.lsp.diagnostics"
 
-if vim.g.tsls == 1 then
+if vim.g.tsls ~= 1 then
   local ok, tsserver_nvim = pcall(require, "config.lsp.tsserver")
   if ok then
     tsserver_nvim.setup {
       on_attach = on_attach,
       settings = {
         composite_mode = "separate_diagnostic",
-        -- debug = true,
-        -- tsserver_logs = {
-        --   verbosity = "verbose",
-        --   file_basename = "/Users/pawel.mizio/.config/nvim/tsserver_",
-        -- },
+        debug = true,
+        tsserver_logs = {
+          verbosity = "verbose",
+          file_basename = "/Users/pawel.mizio/.config/nvim/tsserver_",
+        },
       },
     }
   end
 end
+
+require("lsp_signature").setup {
+  floating_window = true,
+  hint_enable = false,
+}

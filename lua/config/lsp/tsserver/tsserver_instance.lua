@@ -101,7 +101,11 @@ function TsserverInstance:handle_response(message)
           callback(result, response)
         end
       end
-    else
+      -- INFO: exclude SignatureHelp fail response for compatibility with `lsp_signature.nvim`
+      -- this plugin ask for signature even outisde function brakets so error reporst are annoying
+      -- maybe this plugin can implement this feautre in future using treesitter to reduce
+      -- request/respunse ping-pong
+    elseif not response.success and response.command ~= constants.CommandTypes.SignatureHelp then
       vim.schedule(function()
         vim.notify(response.message or "No information available.", log.levels.INFO)
       end)

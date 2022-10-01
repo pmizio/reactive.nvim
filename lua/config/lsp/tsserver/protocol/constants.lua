@@ -167,6 +167,11 @@ return {
     SuggestionDiag = "suggestionDiag",
   },
   RequestCompletedEventName = "requestCompleted",
+  SignatureHelpTriggerReason = {
+    Invoked = "invoked",
+    CharacterTyped = "characterTyped",
+    Retrigger = "retrigger",
+  },
   LspMethods = {
     Initialize = "initialize",
     Shutdown = "shutdown",
@@ -180,6 +185,7 @@ return {
     Hover = "textDocument/hover",
     Definition = "textDocument/definition",
     Reference = "textDocument/references",
+    SignatureHelp = "textDocument/signatureHelp",
     Progress = "$/progress",
   },
   TsserverEvents = {
@@ -226,5 +232,10 @@ return {
     Warning = 2,
     Information = 3,
     Hint = 4,
+  },
+  SignatureHelpTriggerKind = {
+    Invoked = 1,
+    TriggerCharacter = 2,
+    ContentChange = 3,
   },
 }
