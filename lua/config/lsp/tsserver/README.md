@@ -1,0 +1,22 @@
+- [x] textDocument/completion
+- [x] textDocument/hover
+- [x] textDocument/rename
+- [x] textDocument/publishDiagnostics
+- [x] textDocument/signatureHelp
+- [x] textDocument/references
+- [x] textDocument/definition
+- [ ] textDocument/typeDefinition
+- [ ] textDocument/declaration
+- [ ] textDocument/implementation
+- [ ] textDocument/codeAction
+- [ ] textDocument/formatting
+- [ ] textDocument/rangeFormatting
+- [ ] textDocument/documentHighlight
+- [ ] textDocument/documentSymbol
+- [ ] callHierarchy/incomingCalls
+- [ ] callHierarchy/outgoingCalls
+- [ ] window/logMessage
+- [ ] window/showMessage
+- [ ] window/showMessageRequest
+- [ ] workspace/applyEdit
+- [ ] workspace/symbol
