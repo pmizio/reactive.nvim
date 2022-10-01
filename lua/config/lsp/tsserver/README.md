@@ -9,7 +9,7 @@
 - [x] textDocument/declaration - not implemented, tsserver don't support this one
 - [x] textDocument/implementation
 - [x] textDocument/documentSymbol
-- [ ] textDocument/documentHighlight
+- [x] textDocument/documentHighlight
 - [ ] textDocument/codeAction
 - [ ] textDocument/formatting
 - [ ] textDocument/rangeFormatting

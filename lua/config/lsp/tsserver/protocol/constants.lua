@@ -172,6 +172,12 @@ return {
     CharacterTyped = "characterTyped",
     Retrigger = "retrigger",
   },
+  HighlightSpanKind = {
+    none = "none",
+    definition = "definition",
+    reference = "reference",
+    writtenReference = "writtenReference",
+  },
   LspMethods = {
     Initialize = "initialize",
     Shutdown = "shutdown",
@@ -190,6 +196,7 @@ return {
     Reference = "textDocument/references",
     DocumentSymbol = "textDocument/documentSymbol",
     SignatureHelp = "textDocument/signatureHelp",
+    DocumentHighlight = "textDocument/documentHighlight",
     Progress = "$/progress",
   },
   TsserverEvents = {
@@ -269,5 +276,10 @@ return {
     Event = 24,
     Operator = 25,
     TypeParameter = 26,
+  },
+  DocumentHighlightKind = {
+    Text = 1,
+    Read = 2,
+    Write = 3,
   },
 }

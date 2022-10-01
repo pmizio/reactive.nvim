@@ -25,6 +25,7 @@ local capabilities = {
   implementationProvider = true,
   referencesProvider = true,
   documentSymbolProvider = true,
+  documentHighlightProvider = true,
   signatureHelpProvider = {
     triggerCharacters = { "(", ",", "<" },
     retriggerCharacters = { ")" },
