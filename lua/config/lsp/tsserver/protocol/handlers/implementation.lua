@@ -2,12 +2,12 @@ local constants = require "config.lsp.tsserver.protocol.constants"
 local utils = require "config.lsp.tsserver.protocol.utils"
 
 -- tsserver protocol reference:
--- https://github.com/microsoft/TypeScript/blob/8a1b85880f89c9cff606c5844e8883e5f483c7db/lib/protocol.d.ts#L676
-local type_definition_request_handler = function(_, params)
+-- https://github.com/microsoft/TypeScript/blob/8a1b85880f89c9cff606c5844e8883e5f483c7db/lib/protocol.d.ts#L684
+local implementation_request_handler = function(_, params)
   local text_document = params.textDocument
 
   return {
-    command = constants.CommandTypes.TypeDefinition,
+    command = constants.CommandTypes.Implementation,
     arguments = vim.tbl_extend("force", {
       file = vim.uri_to_fname(text_document.uri),
     }, utils.convert_lsp_position_to_tsserver(
@@ -17,8 +17,8 @@ local type_definition_request_handler = function(_, params)
 end
 
 -- tsserver protocol reference:
--- https://github.com/microsoft/TypeScript/blob/8a1b85880f89c9cff606c5844e8883e5f483c7db/lib/protocol.d.ts#L755
-local type_definition_response_handler = function(_, body)
+-- https://github.com/microsoft/TypeScript/blob/8a1b85880f89c9cff606c5844e8883e5f483c7db/lib/protocol.d.ts#L761
+local implementation_response_handler = function(_, body)
   return vim.tbl_map(function(definition)
     return {
       uri = vim.uri_from_fname(definition.file),
@@ -28,12 +28,9 @@ local type_definition_response_handler = function(_, body)
 end
 
 return {
-  request = {
-    method = constants.LspMethods.TypeDefinition,
-    handler = type_definition_request_handler,
-  },
+  request = { method = constants.LspMethods.Implementation, handler = implementation_request_handler },
   response = {
-    method = constants.CommandTypes.TypeDefinition,
-    handler = type_definition_response_handler,
+    method = constants.CommandTypes.Implementation,
+    handler = implementation_response_handler,
   },
 }

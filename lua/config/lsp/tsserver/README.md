@@ -6,8 +6,8 @@
 - [x] textDocument/references
 - [x] textDocument/definition
 - [x] textDocument/typeDefinition
-- [ ] textDocument/declaration
-- [ ] textDocument/implementation
+- [x] textDocument/declaration - not implemented, tsserver don't support this one
+- [x] textDocument/implementation
 - [ ] textDocument/codeAction
 - [ ] textDocument/formatting
 - [ ] textDocument/rangeFormatting
