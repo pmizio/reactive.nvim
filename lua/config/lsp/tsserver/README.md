@@ -8,11 +8,11 @@
 - [x] textDocument/typeDefinition
 - [x] textDocument/declaration - not implemented, tsserver don't support this one
 - [x] textDocument/implementation
+- [x] textDocument/documentSymbol
+- [ ] textDocument/documentHighlight
 - [ ] textDocument/codeAction
 - [ ] textDocument/formatting
 - [ ] textDocument/rangeFormatting
-- [ ] textDocument/documentHighlight
-- [ ] textDocument/documentSymbol
 - [ ] callHierarchy/incomingCalls
 - [ ] callHierarchy/outgoingCalls
 - [ ] window/logMessage
