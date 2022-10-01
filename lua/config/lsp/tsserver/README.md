@@ -5,7 +5,7 @@
 - [x] textDocument/signatureHelp
 - [x] textDocument/references
 - [x] textDocument/definition
-- [ ] textDocument/typeDefinition
+- [x] textDocument/typeDefinition
 - [ ] textDocument/declaration
 - [ ] textDocument/implementation
 - [ ] textDocument/codeAction

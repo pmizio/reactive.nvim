@@ -184,6 +184,7 @@ return {
     PublishDiagnostics = "textDocument/publishDiagnostics",
     Hover = "textDocument/hover",
     Definition = "textDocument/definition",
+    TypeDefinition = "textDocument/typeDefinition",
     Reference = "textDocument/references",
     SignatureHelp = "textDocument/signatureHelp",
     Progress = "$/progress",
