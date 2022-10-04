@@ -42,7 +42,7 @@ function ProjectLoadService:send_progress(event, message)
 end
 
 --- @param response table
-function ProjectLoadService:handler_event(response)
+function ProjectLoadService:handle_event(response)
   local event = response.event
 
   if event == constants.TsserverEvents.ProjectLoadingStart then

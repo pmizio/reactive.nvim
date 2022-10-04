@@ -30,6 +30,7 @@ local capabilities = {
     triggerCharacters = { "(", ",", "<" },
     retriggerCharacters = { ")" },
   },
+  codeActionProvider = true,
 }
 
 return capabilities

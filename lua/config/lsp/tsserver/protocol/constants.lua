@@ -197,6 +197,7 @@ return {
     DocumentSymbol = "textDocument/documentSymbol",
     SignatureHelp = "textDocument/signatureHelp",
     DocumentHighlight = "textDocument/documentHighlight",
+    CodeAction = "textDocument/codeAction",
     Progress = "$/progress",
   },
   TsserverEvents = {

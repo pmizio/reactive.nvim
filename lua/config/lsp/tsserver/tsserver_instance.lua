@@ -11,6 +11,7 @@ local request_handlers = require("config.lsp.tsserver.protocol").request_handler
 local response_handlers = require("config.lsp.tsserver.protocol").response_handlers
 local DiagnosticsService = require "config.lsp.tsserver.protocol.diagnostics"
 local ProjectLoadService = require "config.lsp.tsserver.protocol.project_load"
+local CodeActionsService = require "config.lsp.tsserver.protocol.code_actions"
 
 --- @class TsserverInstance
 --- @field rpc TsserverRpc
@@ -21,6 +22,7 @@ local ProjectLoadService = require "config.lsp.tsserver.protocol.project_load"
 --- @field request_metadata table
 --- @field diagnostics_service DiagnosticsService
 --- @field project_load_service ProjectLoadService
+--- @field code_actions_service CodeActionsService
 
 --- @class TsserverInstance
 local TsserverInstance = {}
@@ -44,6 +46,7 @@ function TsserverInstance:new(path, server_type, dispachers)
   end)
   obj.diagnostics_service = DiagnosticsService:new(server_type, obj, dispachers)
   obj.project_load_service = ProjectLoadService:new(dispachers)
+  obj.code_actions_service = CodeActionsService:new(server_type, obj)
 
   setmetatable(obj, self)
   self.__index = self
@@ -120,7 +123,8 @@ function TsserverInstance:handle_response(message)
   end
 
   self.diagnostics_service:handle_response(response)
-  self.project_load_service:handler_event(response)
+  self.project_load_service:handle_event(response)
+  self.code_actions_service:handle_response(response)
 
   self:send_queued_requests()
 end
@@ -211,6 +215,11 @@ function TsserverInstance:get_lsp_interface()
 
       if method == constants.LspMethods.Initialize then
         self.request_queue:enqueue { message = global_initialize.configure() }
+      end
+
+      if method == constants.LspMethods.CodeAction then
+        self.code_actions_service:request(params, callback, notify_reply_callback)
+        return
       end
 
       self:handle_request(method, params, callback, notify_reply_callback)
