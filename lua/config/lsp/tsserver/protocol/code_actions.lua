@@ -4,6 +4,8 @@ local utils = require "config.lsp.tsserver.protocol.utils"
 --- @class CodeActionsService
 --- @field server_type string
 --- @field tsserver TsserverInstance
+--- @field request_range table|nil
+--- @field refactors table
 --- @field callback function|nil
 --- @field notify_reply_callback function|nil
 
@@ -16,6 +18,7 @@ function CodeActionsService:new(server_type, tsserver)
   local obj = {
     server_type = server_type,
     tsserver = tsserver,
+    refactors = {},
   }
 
   setmetatable(obj, self)
@@ -40,7 +43,7 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
   local start = utils.convert_lsp_position_to_tsserver(params.range.start)
   local _end = utils.convert_lsp_position_to_tsserver(params.range["end"])
 
-  local base_arguments = {
+  self.request_range = {
     file = vim.uri_to_fname(text_document.uri),
     startLine = start.line,
     startOffset = start.offset,
@@ -53,7 +56,7 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
   self.tsserver.request_queue:enqueue {
     message = {
       command = constants.CommandTypes.GetApplicableRefactors,
-      arguments = base_arguments,
+      arguments = self.request_range,
     },
   }
 
@@ -62,13 +65,27 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
   self.tsserver.request_queue:enqueue {
     message = {
       command = constants.CommandTypes.GetCodeFixes,
-      arguments = vim.tbl_extend("force", base_arguments, {
+      arguments = vim.tbl_extend("force", self.request_range, {
         errorCodes = vim.tbl_map(function(diag)
           return diag.code
         end, params.context.diagnostics),
       }),
     },
   }
+end
+
+--- @private
+--- @param kind string
+--- @return string|nil
+local make_lsp_code_action_kind = function(kind)
+  if kind:find("extract", 1, true) then
+    return constants.CodeActionKind.RefactorExtract
+  elseif kind:find("rewrite", 1, true) then
+    return constants.CodeActionKind.RefactorRewrite
+  end
+
+  -- TODO: maybe we want add other kinds but for now it is ok
+  return nil
 end
 
 --- @param response table
@@ -83,7 +100,25 @@ function CodeActionsService:handle_response(response)
   -- https://github.com/microsoft/TypeScript/blob/4635a5cef9aefa9aa847ef7ce2e6767ddf4f54c2/lib/protocol.d.ts#L418
   -- TODO: handle refactors response
   if command == constants.CommandTypes.GetApplicableRefactors then
-    P(response.body)
+    self.refactors = {}
+
+    for _, refactor in ipairs(response.body) do
+      for _, action in ipairs(refactor.actions) do
+        local kind = make_lsp_code_action_kind(action.kind)
+
+        if kind and not action.notApplicableReason then
+          table.insert(self.refactors, {
+            title = action.description,
+            kind = kind,
+            data = vim.tbl_extend("force", self.request_range, {
+              action = action.name,
+              kind = kind,
+              refactor = refactor.name,
+            }),
+          })
+        end
+      end
+    end
   end
 
   -- tsserver protocol reference:
@@ -94,35 +129,19 @@ function CodeActionsService:handle_response(response)
     end
 
     local code_actions = {}
-    local fixes_per_file = {}
 
     for _, fix in ipairs(response.body) do
-      for _, change in ipairs(fix.changes) do
-        local uri = vim.uri_from_fname(change.fileName)
-
-        if not fixes_per_file[uri] then
-          fixes_per_file[uri] = {}
-        end
-
-        for _, edit in ipairs(change.textChanges) do
-          table.insert(fixes_per_file[uri], {
-            newText = edit.newText,
-            range = utils.convert_tsserver_range_to_lsp(edit),
-          })
-        end
-      end
-
       table.insert(code_actions, {
         title = fix.description,
         kind = "quickfix",
         edit = {
-          changes = fixes_per_file,
+          changes = utils.convert_tsserver_edits_to_lsp(fix.changes),
         },
       })
     end
 
     if self.callback then
-      self.callback(nil, code_actions)
+      self.callback(nil, vim.list_extend(code_actions, self.refactors))
     end
   end
 end

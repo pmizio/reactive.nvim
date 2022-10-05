@@ -107,4 +107,25 @@ M.get_lsp_symbol_kind = function(script_element_kind)
   )
 end
 
+M.convert_tsserver_edits_to_lsp = function(edits)
+  local edits_per_file = {}
+
+  for _, change in ipairs(edits) do
+    local uri = vim.uri_from_fname(change.fileName)
+
+    if not edits_per_file[uri] then
+      edits_per_file[uri] = {}
+    end
+
+    for _, edit in ipairs(change.textChanges) do
+      table.insert(edits_per_file[uri], {
+        newText = edit.newText,
+        range = M.convert_tsserver_range_to_lsp(edit),
+      })
+    end
+  end
+
+  return edits_per_file
+end
+
 return M

@@ -198,6 +198,7 @@ return {
     SignatureHelp = "textDocument/signatureHelp",
     DocumentHighlight = "textDocument/documentHighlight",
     CodeAction = "textDocument/codeAction",
+    CodeActionResolve = "codeAction/resolve",
     Progress = "$/progress",
   },
   TsserverEvents = {
@@ -282,5 +283,16 @@ return {
     Text = 1,
     Read = 2,
     Write = 3,
+  },
+  CodeActionKind = {
+    Empty = "",
+    QuickFix = "quickfix",
+    Refactor = "refactor",
+    RefactorExtract = "refactor.extract",
+    RefactorInline = "refactor.inline",
+    RefactorRewrite = "refactor.rewrite",
+    Source = "source",
+    SourceOrganizeImports = "source.organizeImports",
+    SourceFixAll = "source.fixAll",
   },
 }

@@ -1,4 +1,5 @@
 local lspProtocol = require "vim.lsp.protocol"
+local constants = require "config.lsp.tsserver.protocol.constants"
 
 local capabilities = {
   textDocumentSync = lspProtocol.TextDocumentSyncKind.Incremental,
@@ -30,7 +31,19 @@ local capabilities = {
     triggerCharacters = { "(", ",", "<" },
     retriggerCharacters = { ")" },
   },
-  codeActionProvider = true,
+  codeActionProvider = {
+    codeActionKinds = {
+      constants.CodeActionKind.Empty,
+      constants.CodeActionKind.QuickFix,
+      constants.CodeActionKind.Refactor,
+      constants.CodeActionKind.RefactorExtract,
+      constants.CodeActionKind.RefactorInline,
+      constants.CodeActionKind.RefactorRewrite,
+      constants.CodeActionKind.Source,
+      constants.CodeActionKind.SourceOrganizeImports,
+    },
+    resolveProvider = true,
+  },
 }
 
 return capabilities
