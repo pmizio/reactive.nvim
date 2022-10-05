@@ -15,7 +15,6 @@ local CodeActionsService = require "config.lsp.tsserver.protocol.code_actions"
 
 --- @class TsserverInstance
 --- @field rpc TsserverRpc
---- @field seq number
 --- @field server_type string
 --- @field request_queue RequestQueue
 --- @field pending_responses table
@@ -33,7 +32,6 @@ local TsserverInstance = {}
 --- @return TsserverInstance
 function TsserverInstance:new(path, server_type, dispachers)
   local obj = {
-    seq = 0,
     server_type = server_type,
     request_queue = RequestQueue:new(),
     pending_responses = {},
@@ -136,6 +134,7 @@ end
 --- @param notify_reply_callback function
 --- @param is_async boolean|nil
 function TsserverInstance:handle_request(method, params, callback, notify_reply_callback, is_async)
+  local seq = nil
   local tsserver_request = request_handlers[method]
 
   if tsserver_request then
@@ -159,10 +158,17 @@ function TsserverInstance:handle_request(method, params, callback, notify_reply_
       priority = self.request_queue:get_queueing_type(message.command, nil),
     }
 
-    self.request_queue:enqueue(args)
+    seq = self.request_queue:enqueue(args)
+    self.diagnostics_service:handle_request(message)
   end
 
   self:send_queued_requests()
+
+  if seq ~= nil then
+    return true, seq
+  end
+
+  return nil
 end
 
 function TsserverInstance:send_queued_requests()
@@ -175,28 +181,25 @@ function TsserverInstance:send_queued_requests()
   end
 end
 
+--- @param message_container table
 function TsserverInstance:send_request(message_container)
-  local seq = self.seq
+  local seq = message_container.seq
   self.request_metadata[seq] = message_container
 
   if not message_container.is_async then
     self.pending_responses[seq] = true
   end
 
-  self.diagnostics_service:handle_request(seq, message_container.message)
-
-  self:write(message_container.message)
-
-  self.seq = seq + 1
+  self:write(message_container)
 end
 
 --- @private
---- @param message table
-function TsserverInstance:write(message)
+--- @param message_container table
+function TsserverInstance:write(message_container)
   local full_message = vim.tbl_extend("force", {
-    seq = self.seq,
+    seq = message_container.seq,
     type = "request",
-  }, message)
+  }, message_container.message)
 
   self.rpc:write(full_message)
 end
@@ -214,15 +217,17 @@ function TsserverInstance:get_lsp_interface()
       end
 
       if method == constants.LspMethods.Initialize then
+        -- INFO: this is additional request not handled by lsp it is pointless to return it's id
         self.request_queue:enqueue { message = global_initialize.configure() }
       end
 
       if method == constants.LspMethods.CodeAction then
+        -- TODO: return request_id after add organize imports
         self.code_actions_service:request(params, callback, notify_reply_callback)
         return
       end
 
-      self:handle_request(method, params, callback, notify_reply_callback)
+      return self:handle_request(method, params, callback, notify_reply_callback)
     end,
     notify = function(method, params, ...)
       if config.debug then
@@ -234,8 +239,6 @@ function TsserverInstance:get_lsp_interface()
       if method == constants.LspMethods.DidOpen then
         self.request_queue:enqueue { message = file_initialize.configure(params) }
       end
-
-      return true
     end,
     is_closing = function()
       return self.rpc:is_closing()

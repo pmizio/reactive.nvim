@@ -8,17 +8,19 @@ local M = {}
 --- @param callback function
 --- @param notify_reply_callback function
 M.handle_command = function(params, callback, notify_reply_callback)
-  vim.schedule(function()
-    -- TODO: we maintain are own requests id's IDK we shoudld handle them?
-    notify_reply_callback(-1)
-    callback(nil, nil)
+  local command = params.command
+  local command_handler = M[command]
 
-    local command_handler = M[params.command]
-
-    if command_handler then
+  if command_handler then
+    vim.schedule(function()
       command_handler(params)
-    end
-  end)
+
+      notify_reply_callback(command)
+      callback(nil, nil)
+    end)
+  end
+
+  return true, command
 end
 
 --- @param params table

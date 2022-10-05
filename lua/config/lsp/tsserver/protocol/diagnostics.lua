@@ -69,8 +69,9 @@ function DiagnosticsService:new(server_type, tsserver, dispatchers)
     end
 
     obj:cancel()
+    obj:clear_cache(attached_bufs)
 
-    obj.tsserver.request_queue:enqueue {
+    obj.pending = obj.tsserver.request_queue:enqueue {
       message = {
         command = constants.CommandTypes.Geterr,
         arguments = {
@@ -166,9 +167,8 @@ function DiagnosticsService:clear_cache(files)
   end
 end
 
---- @param seq number|nil
 --- @param message table
-function DiagnosticsService:handle_request(seq, message)
+function DiagnosticsService:handle_request(message)
   local command = message.command
 
   if CANCEL_AND_RETRIGGER[command] then
@@ -185,11 +185,6 @@ function DiagnosticsService:handle_request(seq, message)
     )
   then
     self:request()
-  end
-
-  if command == constants.CommandTypes.Geterr then
-    self.pending = seq
-    self:clear_cache(message.arguments.files)
   end
 end
 

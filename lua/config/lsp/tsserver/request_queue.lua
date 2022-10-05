@@ -8,6 +8,7 @@ local CONST_QUEUE_REQUESTS = {
 }
 
 --- @class RequestQueue
+--- @field seq number
 --- @field queue table
 
 --- @class RequestQueue
@@ -22,6 +23,7 @@ local RequestQueue = {
 --- @return RequestQueue
 function RequestQueue:new()
   local obj = {
+    seq = 0,
     queue = {},
   }
 
@@ -33,6 +35,10 @@ end
 
 --- @param message table
 function RequestQueue:enqueue(message)
+  local seq = self.seq
+
+  message.seq = seq
+
   if message.priority == self.Priority.Normal then
     local idx = #self.queue
 
@@ -47,6 +53,10 @@ function RequestQueue:enqueue(message)
   else
     table.insert(self.queue, message)
   end
+
+  self.seq = seq + 1
+
+  return seq
 end
 
 --- @return table
