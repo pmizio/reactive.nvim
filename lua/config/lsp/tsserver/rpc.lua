@@ -5,6 +5,7 @@ local plugin_config = require "config.lsp.tsserver.config"
 local Path = require "plenary.path"
 
 local TsserverInstance = require "config.lsp.tsserver.tsserver_instance"
+local internal_commands = require "config.lsp.tsserver.internal_commands"
 local constants = require "config.lsp.tsserver.protocol.constants"
 
 local DIAGNOSTICS_ALLOWED = {
@@ -54,6 +55,12 @@ M.start = function(server_name, dispatchers)
   --- @return function
   local diapatch_to_servers = function(fn, without_request_check)
     return function(method, ...)
+      -- INFO: tsserver don't have any commans we can capture them and use for internal features eg. rename after refactors
+      if method == constants.LspMethods.ExecuteCommand then
+        internal_commands.handle_command(...)
+        return
+      end
+
       primary_server[fn](method, ...)
 
       if diagnostics_server and (DIAGNOSTICS_ALLOWED[method] or without_request_check) then

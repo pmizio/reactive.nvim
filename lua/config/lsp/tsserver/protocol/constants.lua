@@ -3,6 +3,9 @@ return {
     Primary = "primary",
     Diagnostics = "diagnostics",
   },
+  InternalCommands = {
+    InvokeAdditionalRename = "invoke_additional_rename",
+  },
   CommandTypes = {
     JsxClosingTag = "jsxClosingTag",
     Brace = "brace",
@@ -200,6 +203,7 @@ return {
     CodeAction = "textDocument/codeAction",
     CodeActionResolve = "codeAction/resolve",
     Progress = "$/progress",
+    ExecuteCommand = "workspace/executeCommand",
   },
   TsserverEvents = {
     ProjectLoadingStart = "projectLoadingStart",

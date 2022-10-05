@@ -13,13 +13,17 @@ end
 -- tsserver protocol reference:
 -- https://github.com/microsoft/TypeScript/blob/b0795e9c94757a8ee78077d160cde8819a9801ea/lib/protocol.d.ts#L481
 local code_action_resolve_response_handler = function(_, body, request_param)
-  -- TODO: tsserver refactors also return position where invoke rename to rename new fn/var - handle it somehow
   return {
     title = request_param.data.refactor,
     kind = request_param.data.kind,
     edit = {
       changes = utils.convert_tsserver_edits_to_lsp(body.edits),
     },
+    command = body.renameFilename and {
+      title = "Additional Rename",
+      command = constants.InternalCommands.InvokeAdditionalRename,
+      arguments = { body.renameFilename, body.renameLocation },
+    } or nil,
   }
 end
 
