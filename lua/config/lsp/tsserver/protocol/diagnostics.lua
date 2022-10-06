@@ -256,7 +256,7 @@ function DiagnosticsService:handle_response(response)
   if
     event == constants.DiagnosticEventKind.SyntaxDiag
     or event == constants.DiagnosticEventKind.SemanticDiag
-    or event == constants.DiagnosticEventKind.SyntaxDiag
+    or event == constants.DiagnosticEventKind.SuggestionDiag
   then
     self:collect_diagnostics(response)
   end

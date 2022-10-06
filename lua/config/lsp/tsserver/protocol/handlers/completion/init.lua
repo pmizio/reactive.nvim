@@ -19,9 +19,7 @@ local completion_request_handler = function(_, params)
         or nil,
       includeExternalModuleExports = true,
       includeInsertTextCompletions = true,
-    }, utils.convert_lsp_position_to_tsserver(
-      params.position
-    )),
+    }, utils.convert_lsp_position_to_tsserver(params.position)),
   }
 end
 
@@ -55,6 +53,13 @@ local completion_response_handler = function(_, body, request_params)
       local is_deprecated = string.find(item.kindModifiers, "deprecated", 1, true)
       local insertText = item.insertText or item.name
       local kind = item_kind_utils.map_completion_item_kind(item.kind)
+      local sortText = item.sortText
+
+      -- De-prioritze auto-imports if hasAction or source exists
+      -- https://github.com/Microsoft/vscode/issues/40311
+      if item.hasAction and item.source then
+        sortText = "\u{ffff}" .. item.sortText
+      end
 
       return {
         label = is_optional and (item.name .. "?") or item.name,
@@ -65,7 +70,7 @@ local completion_response_handler = function(_, body, request_params)
         kind = kind,
         insertTextFormat = item.isSnippet and constants.InsertTextFormat.Snippet
           or constants.InsertTextFormat.PlainText,
-        sortText = item.sortText,
+        sortText = sortText,
         textEdit = calculate_text_edit(item.replacementSpan, insertText),
         -- for now lsp support only one tag - deprecated - 1
         tags = is_deprecated and { 1 } or nil,

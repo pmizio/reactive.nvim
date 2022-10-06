@@ -29,6 +29,7 @@ function CodeActionsService:new(server_type, tsserver)
   return obj
 end
 
+--- TODO: collect all code fixes from range/line
 --- @param params table
 --- @param callback function
 --- @param notify_reply_callback function
@@ -42,15 +43,14 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
     or nil
 
   local text_document = params.textDocument
-  local start = utils.convert_lsp_position_to_tsserver(params.range.start)
-  local _end = utils.convert_lsp_position_to_tsserver(params.range["end"])
+  local range = utils.convert_lsp_range_to_tsserver(params.range)
 
   self.request_range = {
     file = vim.uri_to_fname(text_document.uri),
-    startLine = start.line,
-    startOffset = start.offset,
-    endLine = _end.line,
-    endOffset = _end.offset,
+    startLine = range.start.line,
+    startOffset = range.start.offset,
+    endLine = range["end"].line,
+    endOffset = range["end"].offset,
   }
 
   -- tsserver protocol reference:
@@ -149,10 +149,12 @@ function CodeActionsService:handle_response(response)
       self.notify_reply_callback(self.request_id)
     end
 
-    local code_actions = {
-      self:make_imports_action("Organize imports", false),
-      self:make_imports_action("Sort imports", true),
-    }
+    local code_actions = #self.refactors == 0
+        and {
+          self:make_imports_action("Organize imports", false),
+          self:make_imports_action("Sort imports", true),
+        }
+      or {}
 
     for _, fix in ipairs(response.body) do
       table.insert(code_actions, {
