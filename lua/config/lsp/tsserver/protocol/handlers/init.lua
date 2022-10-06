@@ -8,7 +8,13 @@ local make_protocol_handlers = function()
     request_handlers[request.method] = request.handler
 
     if response then
-      response_handlers[response.method] = response.handler
+      if vim.tbl_islist(response) then
+        for _, it in ipairs(response) do
+          response_handlers[it.method] = it.handler
+        end
+      else
+        response_handlers[response.method] = response.handler
+      end
     end
   end
 

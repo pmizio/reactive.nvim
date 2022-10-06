@@ -11,13 +11,13 @@
 | ✅     | textDocument/implementation     |
 | ✅     | textDocument/documentSymbol     |
 | ✅     | textDocument/documentHighlight  |
-| ⏳     | textDocument/codeAction         |
+| ✅     | textDocument/codeAction         |
 | ⏳     | textDocument/formatting         |
 | ⏳     | textDocument/rangeFormatting    |
 | ⏳     | callHierarchy/incomingCalls     |
 | ⏳     | callHierarchy/outgoingCalls     |
+| ⏳     | workspace/symbol - IDK yet      |
 | ❓     | workspace/applyEdit - IDK yet   |
-| ❓     | workspace/symbol - IDK yet      |
 | ❌     | textDocument/declaration - N/A  |
 | ❌     | window/logMessage - N/A         |
 | ❌     | window/showMessage - N/A        |

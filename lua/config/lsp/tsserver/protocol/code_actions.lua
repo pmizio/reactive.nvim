@@ -4,6 +4,7 @@ local utils = require "config.lsp.tsserver.protocol.utils"
 --- @class CodeActionsService
 --- @field server_type string
 --- @field tsserver TsserverInstance
+--- @field request_id number|nil
 --- @field request_range table|nil
 --- @field refactors table
 --- @field callback function|nil
@@ -18,6 +19,7 @@ function CodeActionsService:new(server_type, tsserver)
   local obj = {
     server_type = server_type,
     tsserver = tsserver,
+    request_id = nil,
     refactors = {},
   }
 
@@ -53,7 +55,7 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
 
   -- tsserver protocol reference:
   -- https://github.com/microsoft/TypeScript/blob/4635a5cef9aefa9aa847ef7ce2e6767ddf4f54c2/lib/protocol.d.ts#L409
-  self.tsserver.request_queue:enqueue {
+  self.request_id = self.tsserver.request_queue:enqueue {
     message = {
       command = constants.CommandTypes.GetApplicableRefactors,
       arguments = self.request_range,
@@ -72,6 +74,8 @@ function CodeActionsService:request(params, callback, notify_reply_callback)
       }),
     },
   }
+
+  return true, self.request_id
 end
 
 --- @private
@@ -86,6 +90,23 @@ local make_lsp_code_action_kind = function(kind)
 
   -- TODO: maybe we want add other kinds but for now it is ok
   return nil
+end
+
+--- @param title string
+--- @param destructive boolean
+--- @return table
+function CodeActionsService:make_imports_action(title, destructive)
+  return {
+    title = title,
+    kind = constants.CodeActionKind.SourceOrganizeImports,
+    data = {
+      scope = {
+        type = "file",
+        args = { file = self.request_range.file },
+      },
+      skipDestructiveCodeActions = destructive,
+    },
+  }
 end
 
 --- @param response table
@@ -125,15 +146,18 @@ function CodeActionsService:handle_response(response)
   -- https://github.com/microsoft/TypeScript/blob/4635a5cef9aefa9aa847ef7ce2e6767ddf4f54c2/lib/protocol.d.ts#L585
   if command == constants.CommandTypes.GetCodeFixes then
     if self.notify_reply_callback then
-      self.notify_reply_callback(response.request_seq)
+      self.notify_reply_callback(self.request_id)
     end
 
-    local code_actions = {}
+    local code_actions = {
+      self:make_imports_action("Organize imports", false),
+      self:make_imports_action("Sort imports", true),
+    }
 
     for _, fix in ipairs(response.body) do
       table.insert(code_actions, {
         title = fix.description,
-        kind = "quickfix",
+        kind = constants.CodeActionKind.QuickFix,
         edit = {
           changes = utils.convert_tsserver_edits_to_lsp(fix.changes),
         },

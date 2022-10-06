@@ -222,9 +222,7 @@ function TsserverInstance:get_lsp_interface()
       end
 
       if method == constants.LspMethods.CodeAction then
-        -- TODO: return request_id after add organize imports
-        self.code_actions_service:request(params, callback, notify_reply_callback)
-        return
+        return self.code_actions_service:request(params, callback, notify_reply_callback)
       end
 
       return self:handle_request(method, params, callback, notify_reply_callback)
