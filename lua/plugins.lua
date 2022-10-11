@@ -61,7 +61,7 @@ require("packer").startup(function(use)
   use "kylechui/nvim-surround"
   use "gbprod/substitute.nvim"
   use "tpope/vim-repeat"
-  use "unblevable/quick-scope"
+  use "jinh0/eyeliner.nvim"
   use "andymass/vim-matchup"
 
   -- telescope
@@ -88,7 +88,6 @@ require("packer").startup(function(use)
   use "rgroli/other.nvim"
   use "takac/vim-hardtime"
   use "mbbill/undotree"
-  use "nvim-neorg/neorg"
   use "stevearc/dressing.nvim"
   use "folke/todo-comments.nvim"
 

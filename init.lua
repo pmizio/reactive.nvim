@@ -23,7 +23,7 @@ require "config.telescope"
 -- editing support
 require "config.comment"
 require "config.substitute"
-require "config.quickScope"
+require "config.eyeliner"
 require("nvim-surround").setup {}
 
 -- widgets
@@ -40,11 +40,9 @@ require "config.harpoon"
 require "config.other"
 require "config.hardTime"
 require "config.undotree"
-require "config.norg"
 require("dressing").setup {}
 require("todo-comments").setup {}
 
 vim.cmd "colorscheme tokyonight"
 
-pcall(require, "config.neovide")
 pcall(require, "config.scratchpad")

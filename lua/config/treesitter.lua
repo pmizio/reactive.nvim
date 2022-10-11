@@ -5,6 +5,7 @@ require("nvim-treesitter.configs").setup {
     "tsx",
     "json",
     "css",
+    "markdown",
     "lua",
     "norg",
     "fish",
