@@ -1,5 +1,6 @@
 local constants = require "config.lsp.tsserver.protocol.constants"
-local capabilities = require "config.lsp.tsserver.capabilities"
+local config = require "config.lsp.tsserver.config"
+local make_capabilities = require "config.lsp.tsserver.capabilities"
 
 local configure = function()
   return {
@@ -41,7 +42,7 @@ local initialize_request_handler = function()
 end
 
 local initialize_response_handler = function()
-  return { capabilities = capabilities }
+  return { capabilities = make_capabilities(config) }
 end
 
 return {

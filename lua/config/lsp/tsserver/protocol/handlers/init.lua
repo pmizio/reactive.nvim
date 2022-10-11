@@ -5,7 +5,13 @@ local make_protocol_handlers = function()
     local request = config.request
     local response = config.response
 
-    request_handlers[request.method] = request.handler
+    if vim.tbl_islist(request) then
+      for _, it in ipairs(request) do
+        request_handlers[it.method] = it.handler
+      end
+    else
+      request_handlers[request.method] = request.handler
+    end
 
     if response then
       if vim.tbl_islist(response) then
@@ -34,6 +40,7 @@ local make_protocol_handlers = function()
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.document_highlight")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.code_action_resolve")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.signature_help")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.formatting")
 
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.shutdown")
 

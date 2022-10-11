@@ -202,6 +202,8 @@ return {
     DocumentHighlight = "textDocument/documentHighlight",
     CodeAction = "textDocument/codeAction",
     CodeActionResolve = "codeAction/resolve",
+    Formatting = "textDocument/formatting",
+    RangeFormatting = "textDocument/rangeFormatting",
     Progress = "$/progress",
     ExecuteCommand = "workspace/executeCommand",
   },

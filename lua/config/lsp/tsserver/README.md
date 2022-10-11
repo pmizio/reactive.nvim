@@ -12,8 +12,8 @@
 | ✅     | textDocument/documentSymbol     |
 | ✅     | textDocument/documentHighlight  |
 | ✅     | textDocument/codeAction         |
-| ⏳     | textDocument/formatting         |
-| ⏳     | textDocument/rangeFormatting    |
+| ✅     | textDocument/formatting         |
+| ✅     | textDocument/rangeFormatting    |
 | ⏳     | callHierarchy/incomingCalls     |
 | ⏳     | callHierarchy/outgoingCalls     |
 | ⏳     | workspace/symbol - IDK yet      |

@@ -55,6 +55,7 @@ M.load_and_validate = function(settings)
       ),
     },
     ["settings.debug"] = { settings.debug, "boolean", true },
+    ["settings.enable_formatting"] = { settings.enable_formatting, "boolean", true },
   }
 
   local logs = settings.tsserver_logs

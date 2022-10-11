@@ -61,11 +61,11 @@ M.start = function(server_name, dispatchers)
         return
       end
 
-      primary_server[fn](method, ...)
-
       if diagnostics_server and (DIAGNOSTICS_ALLOWED[method] or without_request_check) then
         diagnostics_server[fn](method, ...)
       end
+
+      return primary_server[fn](method, ...)
     end
   end
 
