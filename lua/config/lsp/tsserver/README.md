@@ -14,9 +14,9 @@
 | ✅     | textDocument/codeAction         |
 | ✅     | textDocument/formatting         |
 | ✅     | textDocument/rangeFormatting    |
-| ⏳     | callHierarchy/incomingCalls     |
-| ⏳     | callHierarchy/outgoingCalls     |
-| ⏳     | workspace/symbol - IDK yet      |
+| ✅     | callHierarchy/incomingCalls     |
+| ✅     | callHierarchy/outgoingCalls     |
+| ⏳     | workspace/symbol                |
 | ❓     | workspace/applyEdit - IDK yet   |
 | ❌     | textDocument/declaration - N/A  |
 | ❌     | window/logMessage - N/A         |

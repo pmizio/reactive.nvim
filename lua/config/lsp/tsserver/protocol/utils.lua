@@ -128,4 +128,14 @@ M.convert_tsserver_edits_to_lsp = function(edits)
   return edits_per_file
 end
 
+M.convert_tsserver_call_hierarchy_item_to_lsp = function(item)
+  return {
+    name = item.name,
+    kind = M.get_lsp_symbol_kind(item.kind),
+    uri = vim.uri_from_fname(item.file),
+    range = M.convert_tsserver_range_to_lsp(item.span),
+    selectionRange = M.convert_tsserver_range_to_lsp(item.selectionSpan),
+  }
+end
+
 return M
