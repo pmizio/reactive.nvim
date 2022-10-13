@@ -207,6 +207,7 @@ return {
     PrepareCallHierarchy = "textDocument/prepareCallHierarchy",
     IncomingCalls = "callHierarchy/incomingCalls",
     OutgoingCalls = "callHierarchy/outgoingCalls",
+    WorkspaceSymbol = "workspace/symbol",
     Progress = "$/progress",
     ExecuteCommand = "workspace/executeCommand",
   },

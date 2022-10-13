@@ -33,6 +33,7 @@ local symbol_kind_map = {
   [c.ScriptElementKind.letElement] = c.SymbolKind.Variable,
   [c.ScriptElementKind.externalModuleName] = c.SymbolKind.Module,
   [c.ScriptElementKind.jsxAttribute] = c.SymbolKind.Property,
+  [c.ScriptElementKind.alias] = c.SymbolKind.Variable,
 }
 
 M.get_text_document_script_kind = function(text_document)
@@ -101,7 +102,7 @@ M.get_lsp_symbol_kind = function(script_element_kind)
     return kind
   end
 
-  vim.notify(
+  vim.schedule_wrap(vim.notify)(
     "Cannot find matching LSP script kind for: " .. script_element_kind,
     vim.log.levels.ERROR
   )

@@ -99,7 +99,7 @@ function TsserverInstance:handle_response(message)
         if status then
           callback(nil, result)
         else
-          callback(result, response or result)
+          callback(result, result)
         end
       end
       -- INFO: exclude SignatureHelp fail response for compatibility with `lsp_signature.nvim`

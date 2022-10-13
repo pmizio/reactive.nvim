@@ -48,6 +48,7 @@ local function make_capabilities(settings)
     documentFormattingProvider = settings.enable_formatting,
     documentRangeFormattingProvider = settings.enable_formatting,
     callHierarchyProvider = true,
+    workspaceSymbolProvider = true,
   }
 end
 

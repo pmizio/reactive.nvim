@@ -43,6 +43,7 @@ local make_protocol_handlers = function()
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.formatting")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.prepare_call_hierarchy")
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.hierarchy_calls")
+  assign_handlers(require "config.lsp.tsserver.protocol.handlers.workspace_symbol")
 
   assign_handlers(require "config.lsp.tsserver.protocol.handlers.shutdown")
 

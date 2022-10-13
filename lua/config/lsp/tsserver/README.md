@@ -16,8 +16,8 @@
 | ✅     | textDocument/rangeFormatting    |
 | ✅     | callHierarchy/incomingCalls     |
 | ✅     | callHierarchy/outgoingCalls     |
-| ⏳     | workspace/symbol                |
-| ❓     | workspace/applyEdit - IDK yet   |
+| ✅     | workspace/symbol                |
+| ❌     | workspace/applyEdit - N/A       |
 | ❌     | textDocument/declaration - N/A  |
 | ❌     | window/logMessage - N/A         |
 | ❌     | window/showMessage - N/A        |
