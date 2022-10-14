@@ -51,16 +51,17 @@ end
 local completion_resolve_response_handler = function(_, body, request_params)
   if body and body[1] then
     local details = body[1]
+    local documentation = details.documentation or {}
 
     if details.tags then
-      table.insert(details.documentation, { text = utils.tsserver_make_tags(details.tags) })
+      table.insert(documentation, { text = utils.tsserver_make_tags(details.tags) })
     end
 
     return vim.tbl_extend("force", request_params, {
       detail = utils.tsserver_docs_to_plain_text(details.displayParts),
       documentation = {
         kind = constants.MarkupKind.Markdown,
-        value = utils.tsserver_docs_to_plain_text(details.documentation, "\n"),
+        value = utils.tsserver_docs_to_plain_text(documentation, "\n"),
       },
       additionalTextEdits = make_text_edits(details.codeActions),
       -- INFO: there is also `command` prop but I don't know there is usecase for that here,
