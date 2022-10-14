@@ -1,7 +1,7 @@
 local config = {
   underline = true,
   signs = true,
-  virtual_text = false,
+  virtual_text = true,
   float = {
     show_header = true,
     source = "always",
@@ -42,7 +42,9 @@ require("config.utils").create_onetime_autocmd("CursorHold", {
   callback = function()
     local current_cursor = vim.api.nvim_win_get_cursor(0)
 
-    if not (current_cursor[1] == last_popup_cursor[1] and current_cursor[2] == last_popup_cursor[2]) then
+    if
+      not (current_cursor[1] == last_popup_cursor[1] and current_cursor[2] == last_popup_cursor[2])
+    then
       last_popup_cursor = current_cursor
       vim.diagnostic.open_float(0, { scope = "cursor" })
     end

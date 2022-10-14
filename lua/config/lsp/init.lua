@@ -64,6 +64,8 @@ lspinstaller.setup {
   automatic_installation = true,
 }
 
+require("neodev").setup {}
+
 for _, server in pairs(lspinstaller.get_installed_servers()) do
   if server.name == "rust_analyzer" then
     require("rust-tools").setup {
@@ -76,13 +78,6 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
         settings = settings[server.name],
       },
     }
-  elseif server.name == "sumneko_lua" then
-    local luadev = require("lua-dev").setup {
-      lspconfig = {
-        on_attach = on_attach,
-      },
-    }
-    lspconfig[server.name].setup(luadev)
   elseif server.name == "tsserver" and vim.g.tsls ~= 1 then
   else
     lspconfig[server.name].setup(vim.tbl_extend("force", {

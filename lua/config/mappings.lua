@@ -39,3 +39,6 @@ m.map({ "n", "v" }, "gY", '"+Y')
 
 -- remap n to also center search result
 m.nmap("n", "nzzzv")
+
+m.nmap("<C-d>", "<C-d>zzzv")
+m.nmap("<C-u>", "<C-u>zzzv")

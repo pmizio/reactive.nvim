@@ -1,16 +1,23 @@
 local fn = vim.fn
 
-local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system {
-    "git",
-    "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
-    install_path,
-  }
+local ensure_packer = function()
+  local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system {
+      "git",
+      "clone",
+      "--depth",
+      "1",
+      "https://github.com/wbthomason/packer.nvim",
+      install_path,
+    }
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
 end
+
+local packer_bootstrap = ensure_packer()
 
 require("packer").startup(function(use)
   use "wbthomason/packer.nvim"
@@ -35,7 +42,7 @@ require("packer").startup(function(use)
   use "williamboman/nvim-lsp-installer"
   use "ray-x/lsp_signature.nvim"
   use "simrat39/rust-tools.nvim"
-  use "folke/lua-dev.nvim"
+  use "folke/neodev.nvim"
   use "j-hui/fidget.nvim"
 
   -- completion
@@ -73,7 +80,7 @@ require("packer").startup(function(use)
   -- widgets
   use "kyazdani42/nvim-web-devicons"
 
-  use "kyazdani42/nvim-tree.lua"
+  use { "kyazdani42/nvim-tree.lua", tag = "nightly" }
   use "hoob3rt/lualine.nvim"
   use { "kevinhwang91/nvim-bqf", ft = "qf" }
 
