@@ -19,7 +19,9 @@ local completion_request_handler = function(_, params)
         or nil,
       includeExternalModuleExports = true,
       includeInsertTextCompletions = true,
-    }, utils.convert_lsp_position_to_tsserver(params.position)),
+    }, utils.convert_lsp_position_to_tsserver(
+      params.position
+    )),
   }
 end
 
@@ -61,6 +63,10 @@ local completion_response_handler = function(_, body, request_params)
         sortText = "\u{ffff}" .. item.sortText
       end
 
+      if item.name == "PluginInfo" then
+        P(item)
+      end
+
       return {
         label = is_optional and (item.name .. "?") or item.name,
         labelDetails = item.labelDetails,
@@ -78,7 +84,7 @@ local completion_response_handler = function(_, body, request_params)
           file = file,
           entryNames = {
             (item.source or item.data) and {
-              name = { item.name },
+              name = item.name,
               source = item.source,
               data = item.data,
             } or item.name,

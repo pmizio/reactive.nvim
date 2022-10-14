@@ -52,7 +52,10 @@ local completion_resolve_response_handler = function(_, body, request_params)
   if body and body[1] then
     local details = body[1]
 
-    table.insert(details.documentation, { text = utils.tsserver_make_tags(details.tags) })
+    if details.tags then
+      table.insert(details.documentation, { text = utils.tsserver_make_tags(details.tags) })
+    end
+
     return vim.tbl_extend("force", request_params, {
       detail = utils.tsserver_docs_to_plain_text(details.displayParts),
       documentation = {
