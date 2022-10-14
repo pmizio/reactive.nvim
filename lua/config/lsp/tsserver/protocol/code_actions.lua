@@ -125,7 +125,7 @@ function CodeActionsService:handle_response(response)
 
     for _, refactor in ipairs(response.body) do
       for _, action in ipairs(refactor.actions) do
-        local kind = make_lsp_code_action_kind(action.kind)
+        local kind = make_lsp_code_action_kind(action.kind or "")
 
         if kind and not action.notApplicableReason then
           table.insert(self.refactors, {
