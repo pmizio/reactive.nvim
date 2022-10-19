@@ -93,6 +93,7 @@ end
 
 --- @private
 function DiagnosticsService:request()
+  -- TODO: correctly handle one server scenario
   if self.server_type ~= constants.ServerCompositeType.Diagnostics then
     return
   end

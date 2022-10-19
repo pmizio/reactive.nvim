@@ -88,8 +88,10 @@ M.tsserver_make_tags = function(tags)
   return table.concat(vim.tbl_map(function(it)
     local parts = { "\n_@" }
     table.insert(parts, it.name)
-    table.insert(parts, "_ — ")
-    table.insert(parts, M.tsserver_docs_to_plain_text(it.text, nil, true))
+    if it.text then
+      table.insert(parts, "_ — ")
+      table.insert(parts, M.tsserver_docs_to_plain_text(it.text, nil, true))
+    end
 
     return table.concat(parts, "")
   end, tags) or {}, "\n")
