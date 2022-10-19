@@ -70,9 +70,7 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
   if server.name == "rust_analyzer" then
     require("rust-tools").setup {
       server = {
-        capabilities = require("cmp_nvim_lsp").update_capabilities(
-          vim.lsp.protocol.make_client_capabilities()
-        ),
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
         on_attach = on_attach,
         handlers = handlers,
         settings = settings[server.name],
@@ -81,9 +79,7 @@ for _, server in pairs(lspinstaller.get_installed_servers()) do
   elseif server.name == "tsserver" and vim.g.tsls ~= 1 then
   else
     lspconfig[server.name].setup(vim.tbl_extend("force", {
-      capabilities = require("cmp_nvim_lsp").update_capabilities(
-        vim.lsp.protocol.make_client_capabilities()
-      ),
+      capabilities = require("cmp_nvim_lsp").default_capabilities(),
       on_attach = function(client, bufnr)
         if server.name == "eslint" then
           client.server_capabilities.documentFormattingProvider = true

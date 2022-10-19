@@ -38,3 +38,11 @@ one_au("TextYankPost", {
     vim.highlight.on_yank { higroup = "IncSearch", timeout = 200 }
   end,
 })
+
+-- Set correct filetype to stop lsp is not yelling about comments
+one_au({ "BufNewFile", "BufRead" }, {
+  pattern = { "*eslint*.json", "tsconfig.json", "jsconfig.json" },
+  callback = function()
+    vim.bo.filetype = "jsonc"
+  end,
+})
