@@ -80,7 +80,7 @@ function DiagnosticsService:new(server_type, tsserver, dispatchers)
         },
       },
       -- INFO: use async only in single server mode
-      is_async = obj.server_type == constants.ServerCompositeType.Primary,
+      is_async = obj.server_type == constants.ServerCompositeType.Single,
     }
 
     if obj.tsserver.request_queue:is_empty() then
@@ -94,7 +94,7 @@ end
 --- @private
 function DiagnosticsService:request()
   -- TODO: correctly handle one server scenario
-  if self.server_type ~= constants.ServerCompositeType.Diagnostics then
+  if self.server_type == constants.ServerCompositeType.Primary then
     return
   end
 

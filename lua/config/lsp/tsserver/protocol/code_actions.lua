@@ -34,7 +34,7 @@ end
 --- @param callback function
 --- @param notify_reply_callback function
 function CodeActionsService:request(params, callback, notify_reply_callback)
-  if self.server_type ~= constants.ServerCompositeType.Primary then
+  if self.server_type == constants.ServerCompositeType.Diagnostics then
     return
   end
 

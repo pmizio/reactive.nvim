@@ -1,5 +1,6 @@
 return {
   ServerCompositeType = {
+    Single = "single",
     Primary = "primary",
     Diagnostics = "diagnostics",
   },

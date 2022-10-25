@@ -39,12 +39,20 @@ M.start = function(server_name, dispatchers)
   -- TODO: handle case when there is no local tsserver eg. use global one
   assert(tsserver_path:exists(), "No tsserver in node_modules!")
 
+  local has_separate_diagonstic = plugin_config.composite_mode
+    == plugin_config.COMPOSITE_MODES.SEPARATE_DIAGNOSTIC
+
   local primary_server = TsserverInstance
-    :new(tsserver_path, constants.ServerCompositeType.Primary, dispatchers)
+    :new(
+      tsserver_path,
+      has_separate_diagonstic and constants.ServerCompositeType.Primary
+        or constants.ServerCompositeType.Single,
+      dispatchers
+    )
     :get_lsp_interface()
   local diagnostics_server = nil
 
-  if plugin_config.composite_mode == plugin_config.COMPOSITE_MODES.SEPARATE_DIAGNOSTIC then
+  if has_separate_diagonstic then
     diagnostics_server = TsserverInstance
       :new(tsserver_path, constants.ServerCompositeType.Diagnostics, dispatchers)
       :get_lsp_interface()
