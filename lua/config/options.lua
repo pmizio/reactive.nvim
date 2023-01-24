@@ -27,6 +27,7 @@ set.cursorline = true
 set.termguicolors = true
 set.pumheight = 10
 set.diffopt:append "vertical"
+set.diffopt:append "linematch:60"
 set.inccommand = "split"
 
 g.mapleader = " "

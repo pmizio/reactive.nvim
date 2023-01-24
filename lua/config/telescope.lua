@@ -37,7 +37,7 @@ m.nmap("<C-p>", function()
   builtin.find_files { path_display = { "shorten" } }
 end)
 m.nmap("<C-f>", function()
-  builtin.live_grep { only_sort_text = true }
+  builtin.live_grep { only_sort_text = true, file_igonre_patterns = { "package-lock.json" } }
 end)
 m.nmap("<leader>b", builtin.buffers)
 m.nmap("<C-g>", builtin.git_branches)
