@@ -59,6 +59,7 @@ require("lazy").setup {
       "j-hui/fidget.nvim",
     },
   },
+  { dir = "~/Documents/GitHub/typescript-tools.nvim" },
   -- END LSP --
   -- START FORMATTING --
   "lukas-reineke/lsp-format.nvim",

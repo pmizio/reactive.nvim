@@ -1,7 +1,7 @@
 local cmp = require "cmp"
 local lsp = require "lsp-zero"
 
-local function noop() end
+local function nop() end
 
 local select_opts = { behavior = cmp.SelectBehavior.Insert }
 
@@ -9,14 +9,18 @@ local cmp_mappings = lsp.defaults.cmp_mappings {
   ["<C-Space>"] = cmp.mapping.complete(),
   ["<C-p>"] = cmp.mapping.select_prev_item(select_opts),
   ["<C-n>"] = cmp.mapping.select_next_item(select_opts),
-  ["<Tab>"] = noop,
-  ["<S-Tab>"] = noop,
-  ["<Up>"] = noop,
-  ["<Down>"] = noop,
+  ["<Tab>"] = nil,
+  ["<S-Tab>"] = nop,
+  ["<Up>"] = nop,
+  ["<Down>"] = nop,
   ["<CR>"] = nil,
 }
 
 local cmp_config = lsp.defaults.cmp_config {
+  completion = {
+    completeopt = "menu,menuone,noselect",
+  },
+  preselect = cmp.PreselectMode.None,
   mapping = cmp_mappings,
   window = {
     completion = cmp.config.window.bordered(),
@@ -46,3 +50,4 @@ cmp.setup.cmdline(":", {
 })
 
 cmp.setup(cmp_config)
+P(cmp_config)

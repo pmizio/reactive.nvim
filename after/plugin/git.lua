@@ -20,3 +20,31 @@ config_autocmd("FileType", {
 })
 
 require("gitsigns").setup {}
+
+local get_current_file_gh_url = function()
+  local user_repo = fn.system("git config --get remote.origin.url")
+    :match "https://github%.com/([%w%d-/]+)%.git"
+  if user_repo then
+    local branch = fn.system("git branch --show-current"):gsub("%s*$", "")
+    local file = vim.fn.expand "%:p:~:."
+    local line = vim.api.nvim_win_get_cursor(0)[1]
+    local gh_url = "https://github.com/"
+      .. user_repo
+      .. "/blob/"
+      .. branch
+      .. "/"
+      .. file
+      .. "#L"
+      .. line
+
+    return gh_url
+  end
+
+  return nil
+end
+
+local open_in_gh = function()
+  fn.system("open " .. get_current_file_gh_url())
+end
+
+vim.keymap.set("n", "<leader>go", open_in_gh)
