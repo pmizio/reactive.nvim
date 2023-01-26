@@ -50,4 +50,3 @@ cmp.setup.cmdline(":", {
 })
 
 cmp.setup(cmp_config)
-P(cmp_config)

@@ -90,6 +90,12 @@ require("lazy").setup {
   "mbbill/undotree",
   "tpope/vim-repeat",
   "lukas-reineke/indent-blankline.nvim",
+  {
+    "stevearc/dressing.nvim",
+    config = function()
+      require("dressing").setup {}
+    end,
+  },
   { "kyazdani42/nvim-tree.lua", tag = "nightly" },
   "akinsho/toggleterm.nvim",
   "hoob3rt/lualine.nvim",
