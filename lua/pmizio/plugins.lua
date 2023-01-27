@@ -85,6 +85,7 @@ require("lazy").setup {
       require("nvim-surround").setup {}
     end,
   },
+  "windwp/nvim-autopairs",
   "jinh0/eyeliner.nvim",
   -- END EDITING SUPPORT --
   "mbbill/undotree",
