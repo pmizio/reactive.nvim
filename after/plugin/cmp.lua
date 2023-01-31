@@ -1,5 +1,6 @@
 local cmp = require "cmp"
 local lsp = require "lsp-zero"
+local luasnip = require "luasnip"
 
 local function nop() end
 
@@ -9,6 +10,21 @@ local cmp_mappings = lsp.defaults.cmp_mappings {
   ["<C-Space>"] = cmp.mapping.complete(),
   ["<C-p>"] = cmp.mapping.select_prev_item(select_opts),
   ["<C-n>"] = cmp.mapping.select_next_item(select_opts),
+  ["<C-y>"] = cmp.mapping(function(fallback)
+    if luasnip.expand_or_jumpable() then
+      luasnip.expand_or_jump()
+    elseif cmp.visible() then
+      cmp.confirm {
+        behavior = cmp.ConfirmBehavior.Replace,
+        select = true,
+      }
+    else
+      fallback()
+    end
+  end, {
+    "i",
+    "s",
+  }),
   ["<Tab>"] = nil,
   ["<S-Tab>"] = nop,
   ["<Up>"] = nop,
