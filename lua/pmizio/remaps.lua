@@ -46,3 +46,7 @@ map("n", "<C-u>", "<C-u>zzzv")
 
 -- terminal
 map("t", "<ESC>", "<C-\\><C-n>")
+
+-- calc
+map("n", "<C-m>", '"zcc<C-r>=<C-r>z<CR><ESC>')
+map("v", "<C-m>", '"zc<C-r>=<C-r>z<CR><ESC>')

@@ -2,7 +2,7 @@ local set = vim.opt
 local g = vim.g
 local config_autocmd = require("pmizio.utils").config_autocmd
 
-vim.cmd "filetype indent off"
+vim.cmd.filetype("indent", "off")
 vim.cmd.colorscheme "tokyonight"
 set.number = true
 set.relativenumber = true
