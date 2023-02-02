@@ -44,6 +44,10 @@ require("nvim-treesitter.configs").setup {
     use_virtual_text = true,
     lint_events = { "BufWrite", "CursorHold" },
   },
+  autotag = {
+    enable = true,
+  },
 }
 
 require("indent_blankline").setup {}
+require("nvim-ts-autotag").setup()
