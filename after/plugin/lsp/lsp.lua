@@ -41,13 +41,6 @@ lsp.configure("eslint", {
   end,
 })
 
-lsp.configure("clangd", {
-  cmd = {
-    os.getenv "HOME"
-      .. "/.espressif/tools/xtensa-clang/14.0.0-38679f0333/xtensa-esp32-elf-clang/bin/clangd",
-  },
-})
-
 lsp.setup()
 
 require("fidget").setup {
