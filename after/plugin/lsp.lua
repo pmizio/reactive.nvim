@@ -5,7 +5,7 @@ local themes = require "telescope.themes"
 lsp.preset "lsp-compe"
 lsp.nvim_workspace()
 
-lsp.ensure_installed { "sumneko_lua", "eslint", "jsonls" }
+lsp.ensure_installed { "sumneko_lua", "eslint", "jsonls", "clangd" }
 
 lsp.on_attach(function(client, bufnr)
   client.server_capabilities.documentRangeFormattingProvider = false
@@ -39,6 +39,13 @@ lsp.configure("eslint", {
     client.server_capabilities.renameProvider = false
     require("lsp-format").on_attach(client)
   end,
+})
+
+lsp.configure("clangd", {
+  cmd = {
+    os.getenv "HOME"
+      .. "/.espressif/tools/xtensa-clang/14.0.0-38679f0333/xtensa-esp32-elf-clang/bin/clangd",
+  },
 })
 
 lsp.setup()

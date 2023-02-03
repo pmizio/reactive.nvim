@@ -27,7 +27,12 @@ require("lazy").setup {
     end,
   },
   -- END COMMON DEPS --
-  "folke/tokyonight.nvim",
+  {
+    "folke/tokyonight.nvim",
+    config = function()
+      vim.cmd.colorscheme "tokyonight"
+    end,
+  },
   -- START TREESITTER --
   { "nvim-treesitter/nvim-treesitter", cmd = "TSUpdate" },
   { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufRead", lazy = true },
