@@ -64,7 +64,14 @@ require("lazy").setup {
       "j-hui/fidget.nvim",
     },
   },
+  "simrat39/rust-tools.nvim",
   { dir = "~/Documents/GitHub/typescript-tools.nvim" },
+  {
+    dir = "~/Documents/Allegro/devday/vscode-allegro-metrum",
+    config = function()
+      require("allegro-metrum").setup {}
+    end,
+  },
   -- END LSP --
   -- START FORMATTING --
   "lukas-reineke/lsp-format.nvim",

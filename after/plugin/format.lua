@@ -3,7 +3,7 @@ local null_ls = require "null-ls"
 local mason_null_ls = require "mason-null-ls"
 
 mason_null_ls.setup {
-  ensure_installed = { "stylua", "prettierd" },
+  ensure_installed = { "stylua", "prettierd", "rustfmt" },
   automatic_setup = true,
 }
 
