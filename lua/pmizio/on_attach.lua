@@ -25,7 +25,7 @@ local function on_attach(client, bufnr)
   end)
   lsp_map("n", "[d", vim.diagnostic.goto_prev)
   lsp_map("n", "]d", vim.diagnostic.goto_next)
-  lsp_map("n", "<C-E>", vim.diagnostic.open_float)
+  lsp_map("n", "<leader>e", vim.diagnostic.open_float)
   lsp_map("i", "<C-K>", vim.lsp.buf.signature_help)
 end
 

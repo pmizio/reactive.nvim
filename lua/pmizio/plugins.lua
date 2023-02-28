@@ -65,6 +65,7 @@ require("lazy").setup {
     },
   },
   "simrat39/rust-tools.nvim",
+  "folke/neodev.nvim",
   { dir = "~/Documents/GitHub/typescript-tools.nvim" },
   {
     dir = "~/Documents/Allegro/devday/vscode-allegro-metrum",

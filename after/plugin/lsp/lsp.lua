@@ -1,5 +1,7 @@
 local on_attach = require "pmizio.on_attach"
 
+require("neodev").setup {}
+
 local lsp = require("lsp-zero").preset {
   name = "lsp-compe",
   set_lsp_keymaps = {
@@ -9,7 +11,7 @@ local lsp = require("lsp-zero").preset {
 
 lsp.nvim_workspace()
 
-lsp.ensure_installed { "sumneko_lua", "eslint", "jsonls", "clangd", "rust_analyzer" }
+lsp.ensure_installed { "lua_ls", "eslint", "jsonls", "clangd", "rust_analyzer" }
 
 lsp.on_attach(on_attach)
 
@@ -34,6 +36,17 @@ local rust_lsp = lsp.build_options("rust_analyzer", {
 lsp.setup()
 
 require("rust-tools").setup { server = rust_lsp }
+
+require("lspconfig").lua_ls.setup {
+  on_attach = on_attach,
+  settings = {
+    Lua = {
+      completion = {
+        callSnippet = "Replace",
+      },
+    },
+  },
+}
 
 require("fidget").setup {
   text = { spinner = "moon" },
