@@ -66,6 +66,10 @@ require("lazy").setup {
   },
   "simrat39/rust-tools.nvim",
   "folke/neodev.nvim",
+  {
+    "zbirenbaum/copilot-cmp",
+    dependencies = { "zbirenbaum/copilot.lua" },
+  },
   { dir = "~/Documents/GitHub/typescript-tools.nvim" },
   {
     dir = "~/Documents/Allegro/devday/vscode-allegro-metrum",
@@ -121,4 +125,5 @@ require("lazy").setup {
       require("todo-comments").setup {}
     end,
   },
+  "christoomey/vim-tmux-navigator",
 }

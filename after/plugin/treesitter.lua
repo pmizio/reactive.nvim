@@ -9,7 +9,6 @@ require("nvim-treesitter.configs").setup {
     "lua",
     "query",
     "vim",
-    "help",
   },
   sync_install = false,
   auto_install = true,

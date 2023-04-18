@@ -1,1 +1,1 @@
-require('pmizio')
+require "pmizio"

@@ -5,7 +5,7 @@ require("neodev").setup {}
 local lsp = require("lsp-zero").preset {
   name = "lsp-compe",
   set_lsp_keymaps = {
-    preserve_mappings = false,
+    preserve_mappings = true,
   },
 }
 
@@ -44,8 +44,19 @@ require("lspconfig").lua_ls.setup {
       completion = {
         callSnippet = "Replace",
       },
+      diagnostics = {
+        globals = { "describe", "it" },
+      },
     },
   },
+}
+
+local null_ls = require "null-ls"
+local null_opts = lsp.build_options("null-ls", {})
+null_ls.setup {
+  on_attach = function(client, bufnr)
+    null_opts.on_attach(client, bufnr)
+  end,
 }
 
 require("fidget").setup {

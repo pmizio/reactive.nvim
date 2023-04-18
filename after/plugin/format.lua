@@ -4,7 +4,7 @@ local mason_null_ls = require "mason-null-ls"
 
 mason_null_ls.setup {
   ensure_installed = { "stylua", "prettierd", "rustfmt" },
-  automatic_setup = true,
+  automatic_setup = false,
 }
 
 local js_ts_opts = {
@@ -29,5 +29,3 @@ null_ls.setup {
     null_ls.builtins.formatting.prettierd,
   },
 }
-
-mason_null_ls.setup_handlers()

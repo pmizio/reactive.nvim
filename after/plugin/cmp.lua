@@ -42,12 +42,18 @@ local cmp_config = lsp.defaults.cmp_config {
     completion = cmp.config.window.bordered(),
   },
   formatting = {
-    format = require("lspkind").cmp_format { with_text = true, maxwidth = 50 },
+    format = require("lspkind").cmp_format {
+      max_width = 50,
+      mode = "symbol_text",
+      symbol_map = { Copilot = "" },
+    },
   },
   experimental = {
     ghost_text = true,
   },
 }
+
+table.insert(cmp_config.sources, 1, { name = "copilot" })
 
 cmp.setup.cmdline("/", {
   mapping = cmp.mapping.preset.cmdline(),
