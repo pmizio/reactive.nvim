@@ -39,7 +39,7 @@ map("n", "<C-f>", function()
   builtin.live_grep { only_sort_text = true }
 end)
 map("n", "<leader>b", builtin.buffers)
-map("n", "<C-g>", builtin.git_branches)
+map("n", "<leader>gb", builtin.git_branches)
 map("n", "<leader>p", function()
   telescope.extensions.project.project {}
 end)

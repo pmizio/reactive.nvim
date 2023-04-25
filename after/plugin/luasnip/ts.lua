@@ -29,6 +29,22 @@ local jsTsSnippets = {
     )
   ),
   snippet("fln", { utils.file_name(true) }),
+  snippet(
+    "fc",
+    fmt(
+      [[
+      import React from 'react';
+
+      interface Props {{
+      }}
+
+      const {}: React.FC<Props> = () => {{
+        {}
+      }}
+      ]],
+      { utils.file_name(), i(1) }
+    )
+  ),
 }
 
 for _, suffix in pairs { "log", "dir", "error", "trace" } do

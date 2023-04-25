@@ -48,5 +48,5 @@ map("n", "<C-u>", "<C-u>zzzv")
 map("t", "<ESC>", "<C-\\><C-n>")
 
 -- calc
-map("n", "<C-m>", '"zcc<C-r>=<C-r>z<CR><ESC>')
-map("v", "<C-m>", '"zc<C-r>=<C-r>z<CR><ESC>')
+map("n", "<leader>m", '"zcc<C-r>=<C-r>z<CR><ESC>', { silent = true })
+map("v", "<leader>m", '"zc<C-r>=<C-r>z<CR><ESC>', { silent = true })

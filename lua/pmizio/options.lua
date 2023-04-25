@@ -35,6 +35,7 @@ g.mapleader = " "
 
 vim.api.nvim_create_user_command("Wqa", "wa | qa", { force = true })
 vim.cmd "cabbrev wqa Wqa"
+vim.cmd "cabbrev bda 1,$bd"
 
 config_autocmd("TextYankPost", {
   callback = function()
