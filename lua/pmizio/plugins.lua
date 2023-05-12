@@ -71,12 +71,7 @@ require("lazy").setup {
     dependencies = { "zbirenbaum/copilot.lua" },
   },
   { dir = "~/Documents/GitHub/typescript-tools.nvim" },
-  {
-    dir = "~/Documents/Allegro/devday/vscode-allegro-metrum",
-    config = function()
-      require("allegro-metrum").setup {}
-    end,
-  },
+  { dir = "~/Documents/Allegro/devday/vscode-allegro-metrum" },
   -- END LSP --
   -- START FORMATTING --
   "lukas-reineke/lsp-format.nvim",
