@@ -84,6 +84,7 @@ require("lazy").setup {
   -- END TELESCOPE --
   -- START GIT --
   { "tpope/vim-fugitive", cmd = { "G", "Git" }, lazy = true },
+  "akinsho/git-conflict.nvim",
   "lewis6991/gitsigns.nvim",
   -- END GIT --
   -- START COMMENT --

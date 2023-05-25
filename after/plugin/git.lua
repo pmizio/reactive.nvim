@@ -48,3 +48,10 @@ local open_in_gh = function()
 end
 
 vim.keymap.set("n", "<leader>go", open_in_gh)
+
+require("git-conflict").setup {
+  highlights = {
+    incoming = "DiffAdd",
+    current = "DiffText",
+  },
+}
