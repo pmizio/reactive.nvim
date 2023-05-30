@@ -91,6 +91,7 @@ require("lazy").setup {
   -- END COMMENT --
   -- START EDITING SUPPORT --
   { "kylechui/nvim-surround", opts = {} },
+  "gbprod/substitute.nvim",
   { "windwp/nvim-autopairs", opts = {
     check_ts = true,
   } },
