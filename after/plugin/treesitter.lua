@@ -47,6 +47,3 @@ require("nvim-treesitter.configs").setup {
     enable = true,
   },
 }
-
-require("indent_blankline").setup {}
-require("nvim-ts-autotag").setup()

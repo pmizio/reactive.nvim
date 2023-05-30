@@ -19,12 +19,10 @@ require("lazy").setup {
   "nvim-lua/popup.nvim",
   {
     "kyazdani42/nvim-web-devicons",
-    config = function()
-      require("nvim-web-devicons").setup {
-        color_icons = true,
-        default = true,
-      }
-    end,
+    opts = {
+      color_icons = true,
+      default = true,
+    },
   },
   -- END COMMON DEPS --
   {
@@ -92,34 +90,27 @@ require("lazy").setup {
   "JoosepAlviste/nvim-ts-context-commentstring",
   -- END COMMENT --
   -- START EDITING SUPPORT --
-  {
-    "kylechui/nvim-surround",
-    config = function()
-      require("nvim-surround").setup {}
-    end,
-  },
-  "windwp/nvim-autopairs",
-  "windwp/nvim-ts-autotag",
+  { "kylechui/nvim-surround", opts = {} },
+  { "windwp/nvim-autopairs", opts = {
+    check_ts = true,
+  } },
+  { "windwp/nvim-ts-autotag", opts = {} },
   "jinh0/eyeliner.nvim",
   -- END EDITING SUPPORT --
   "mbbill/undotree",
   "tpope/vim-repeat",
-  "lukas-reineke/indent-blankline.nvim",
-  {
-    "stevearc/dressing.nvim",
-    config = function()
-      require("dressing").setup {}
-    end,
-  },
+  { "lukas-reineke/indent-blankline.nvim", opts = {} },
+  { "stevearc/dressing.nvim", opts = {} },
   { "kyazdani42/nvim-tree.lua", tag = "nightly" },
   "akinsho/toggleterm.nvim",
   "hoob3rt/lualine.nvim",
   { "kevinhwang91/nvim-bqf", ft = "qf", lazy = true },
+  { "folke/todo-comments.nvim", opts = {} },
+  "christoomey/vim-tmux-navigator",
   {
-    "folke/todo-comments.nvim",
-    config = function()
-      require("todo-comments").setup {}
+    "takac/vim-hardtime",
+    init = function()
+      vim.g.hardtime_default_on = 1
     end,
   },
-  "christoomey/vim-tmux-navigator",
 }
