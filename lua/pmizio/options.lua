@@ -30,6 +30,7 @@ set.diffopt:append "vertical"
 set.inccommand = "split"
 set.scrolloff = 10
 set.undodir = vim.fn.stdpath "data" .. "/undodir"
+set.mouse = ""
 
 g.mapleader = " "
 

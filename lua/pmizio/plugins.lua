@@ -32,7 +32,7 @@ require("lazy").setup {
     end,
   },
   -- START TREESITTER --
-  { "nvim-treesitter/nvim-treesitter", cmd = "TSUpdate" },
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
   { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufRead", lazy = true },
   { "nvim-treesitter/playground", cmd = "TSPlaygroundToggle", lazy = true },
   -- START LSP --
@@ -64,10 +64,11 @@ require("lazy").setup {
   },
   "simrat39/rust-tools.nvim",
   "folke/neodev.nvim",
-  {
-    "zbirenbaum/copilot-cmp",
-    dependencies = { "zbirenbaum/copilot.lua" },
-  },
+  -- INFO: uncoment when we get access again
+  -- {
+  --   "zbirenbaum/copilot-cmp",
+  --   dependencies = { "zbirenbaum/copilot.lua" },
+  -- },
   { dir = "~/Documents/GitHub/typescript-tools.nvim" },
   { dir = "~/Documents/Allegro/devday/vscode-allegro-metrum" },
   -- END LSP --

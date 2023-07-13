@@ -1,8 +1,7 @@
 require("eyeliner").setup {
   highlight_on_key = true,
+  match = "[%w]",
 }
 
-vim.cmd [[
-  highlight EyelinerPrimary guifg='#ff0000' gui=underline ctermfg=196 cterm=underline
-  highlight EyelinerSecondary guifg='#5fffff' gui=underline ctermfg=21 cterm=underline
-]]
+vim.api.nvim_set_hl(0, "EyelinerPrimary", { fg = "#ff0000", underline = true })
+vim.api.nvim_set_hl(0, "EyelinerSecondary", { fg = "#5fffff", underline = true })

@@ -7,4 +7,5 @@ vim.g.hardtime_ignore_buffer_patterns = {
   "\\.git/COMMIT_EDITMSG",
   "\\.git/rebase-merge.*",
   "undotree_2",
+  "runtime/doc/.*.txt",
 }
