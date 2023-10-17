@@ -4,12 +4,11 @@ return {
   event = "BufReadPre",
   config = function()
     local on_attach = require "pmizio.on_attach"
+    local utils = require "pmizio.utils"
 
     require("neodev").setup {}
 
-    local group = vim.api.nvim_create_augroup("LspConfig", { clear = true })
-
-    vim.api.nvim_create_autocmd("LspAttach", {
+    utils.config_autocmd("LspAttach", {
       callback = function(e)
         local client = vim.lsp.get_client_by_id(e.data.client_id)
 
@@ -19,7 +18,6 @@ return {
 
         on_attach(client, e.buf)
       end,
-      group = group,
     })
 
     require("fidget").setup {
