@@ -50,3 +50,5 @@ map("t", "<ESC>", "<C-\\><C-n>")
 -- calc
 map("n", "<leader>m", '"zcc<C-r>=<C-r>z<CR><ESC>', { silent = true })
 map("v", "<leader>m", '"zc<C-r>=<C-r>z<CR><ESC>', { silent = true })
+
+map("n", "<leader>cp", [[:let @+=expand("%")<CR>]], { silent = true })

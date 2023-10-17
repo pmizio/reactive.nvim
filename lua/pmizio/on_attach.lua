@@ -1,9 +1,7 @@
 local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
 
-local function on_attach(client, bufnr)
-  client.server_capabilities.documentRangeFormattingProvider = false
-
+local function on_attach(_, bufnr)
   local function lsp_map(mode, lhs, rhs)
     vim.keymap.set(mode, lhs, rhs, { buffer = bufnr })
   end
