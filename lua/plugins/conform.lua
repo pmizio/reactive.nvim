@@ -1,16 +1,30 @@
 local formatters_by_ft = {
   lua = { "stylua" },
-  typescript = { "prettierd" },
-  typescriptreact = { "prettierd" },
-  javascript = { "prettierd" },
-  javascriptreact = { "prettierd" },
-  html = { "prettierd" },
-  css = { "prettierd" },
-  postcsss = { "prettierd" },
-  markdown = { "prettierd" },
-  json = { "prettierd" },
-  yaml = { "prettierd" },
 }
+
+local eslint_ft = {
+  "typescript",
+  "typescriptreact",
+  "javascript",
+  "javascriptreact",
+}
+
+for _, ft in ipairs(eslint_ft) do
+  formatters_by_ft[ft] = { "eslint_d", "prettierd" }
+end
+
+local prettier_ft = {
+  "html",
+  "css",
+  "postcsss",
+  "markdown",
+  "json",
+  "yaml",
+}
+
+for _, ft in ipairs(prettier_ft) do
+  formatters_by_ft[ft] = { "prettierd" }
+end
 
 return {
   "stevearc/conform.nvim",
@@ -27,13 +41,6 @@ return {
     vim.api.nvim_create_autocmd("BufWritePre", {
       pattern = "*",
       callback = function(e)
-        local client = vim.lsp.get_clients({ buf = e.buf })[1]
-
-        ---@diagnostic disable-next-line: undefined-field
-        if client and client.name == "eslint" then
-          vim.lsp.buf.format { async = false }
-        end
-
         conform.format {
           bufnr = e.buf,
           timeout_ms = 1000,

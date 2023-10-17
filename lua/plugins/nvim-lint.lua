@@ -12,7 +12,7 @@ return {
 
     local group = vim.api.nvim_create_augroup("NvimLint", { clear = true })
 
-    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
       pattern = "*",
       callback = function()
         lint.try_lint()

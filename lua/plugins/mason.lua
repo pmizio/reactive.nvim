@@ -21,6 +21,7 @@ return {
       ensure_installed = {
         -- Linters
         "luacheck",
+        "eslint_d",
         -- Formatters
         "prettierd",
         "stylua",
