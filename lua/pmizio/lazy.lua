@@ -29,7 +29,7 @@ require("lazy").setup({
       vim.cmd.colorscheme "tokyonight"
     end,
   },
-  { "stevearc/dressing.nvim", lazy = false, opts = {} },
+  { "stevearc/dressing.nvim", event = "VeryLazy", opts = {} },
   { "folke/todo-comments.nvim", event = "BufReadPre", opts = {} },
   { "lukas-reineke/indent-blankline.nvim", event = "BufReadPre", main = "ibl", opts = {} },
   -- END VISUALS --
