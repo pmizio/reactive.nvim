@@ -3,7 +3,7 @@ return {
   dependencies = { "j-hui/fidget.nvim", "folke/neodev.nvim" },
   event = "BufReadPre",
   config = function()
-    local on_attach = require "pmizio.on_attach"
+    local lsp = require "pmizio.lsp"
     local utils = require "pmizio.utils"
 
     require("neodev").setup {}
@@ -16,7 +16,7 @@ return {
           return
         end
 
-        on_attach(client, e.buf)
+        lsp.on_attach(client, e.buf)
       end,
     })
 

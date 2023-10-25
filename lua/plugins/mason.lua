@@ -9,7 +9,7 @@ return {
   config = function()
     local mason_lspconfig = require "mason-lspconfig"
     local tool_installer = require "mason-tool-installer"
-    local on_attach = require "pmizio.on_attach"
+    local lsp = require "pmizio.lsp"
 
     require("mason").setup {}
 
@@ -30,16 +30,10 @@ return {
 
     tool_installer.run_on_start()
 
-    local handlers = {
-      ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = "rounded",
-      }),
-    }
-
     for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
       require("lspconfig")[server].setup {
-        on_attach = on_attach,
-        handlers = handlers,
+        on_attach = lsp.on_attach,
+        handlers = lsp.handlers,
       }
     end
   end,

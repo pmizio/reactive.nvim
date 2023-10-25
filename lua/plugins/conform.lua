@@ -37,14 +37,17 @@ return {
 
         ---@diagnostic disable-next-line: undefined-field
         if client and client.name == "eslint" then
-          vim.lsp.buf.format { async = false }
+          pcall(vim.lsp.buf.format, {
+            async = false,
+            timeout_ms = 2000,
+          })
         end
 
-        conform.format {
+        pcall(conform.format, {
           bufnr = e.buf,
           timeout_ms = 1000,
           lsp_fallback = true,
-        }
+        })
       end,
     })
   end,

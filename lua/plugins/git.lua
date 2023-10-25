@@ -11,7 +11,7 @@ return {
       callback = function()
         local content = vim.api.nvim_buf_get_lines(0, 0, -1, false)[1]
 
-        if content ~= "" and content:find "^Merge branch" == nil then
+        if content ~= "" and type(content:find "^Merge branch") ~= "nil" then
           return
         end
 

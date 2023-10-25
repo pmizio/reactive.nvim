@@ -2,7 +2,7 @@ return {
   dir = "~/Documents/GitHub/typescript-tools.nvim",
   ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
   config = function()
-    local on_attach = require "pmizio.on_attach"
+    local lsp = require "pmizio.lsp"
     local utils = require "pmizio.utils"
 
     local ok, tst = pcall(require, "typescript-tools")
@@ -12,11 +12,12 @@ return {
     end
 
     tst.setup {
+      handlers = lsp.handlers,
       on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
         client.server_capabilities.documentRangeFormattingProvider = false
 
-        on_attach(client, bufnr)
+        lsp.on_attach(client, bufnr)
       end,
       settings = {
         separate_diagnostic_server = true,
