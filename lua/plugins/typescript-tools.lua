@@ -23,6 +23,7 @@ return {
         separate_diagnostic_server = true,
         composite_mode = "separate_diagnostic",
         publish_diagnostic_on = "insert_leave",
+        -- tsserver_logs = "verbose",
       },
     }
   end,

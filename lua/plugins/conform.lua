@@ -33,13 +33,13 @@ return {
     utils.config_autocmd("BufWritePre", {
       pattern = "*",
       callback = function(e)
-        local client = vim.lsp.get_clients({ buf = e.buf })[1]
+        local client = vim.lsp.get_clients({ buf = e.buf, name = "eslint" })[1]
 
         ---@diagnostic disable-next-line: undefined-field
-        if client and client.name == "eslint" then
+        if client then
           pcall(vim.lsp.buf.format, {
             async = false,
-            timeout_ms = 2000,
+            timeout_ms = 4000,
           })
         end
 

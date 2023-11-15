@@ -32,6 +32,7 @@ return {
         ghost_text = true,
       },
       sources = cmp.config.sources({
+        { name = "cody" },
         { name = "luasnip" },
         { name = "nvim_lsp" },
       }, {
@@ -43,7 +44,10 @@ return {
         format = require("lspkind").cmp_format {
           max_width = 50,
           mode = "symbol_text",
-          symbol_map = { Copilot = "" },
+          symbol_map = {
+            Copilot = "",
+            Cody = "",
+          },
         },
       },
       mapping = cmp.mapping.preset.insert {
