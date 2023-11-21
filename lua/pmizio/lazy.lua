@@ -37,9 +37,12 @@ require("lazy").setup({
   { "kylechui/nvim-surround", keys = { "cs", "ds", "ys" }, opts = {} },
   { "windwp/nvim-autopairs", event = "InsertEnter", opts = { check_ts = true } },
   { "windwp/nvim-ts-autotag", event = "InsertEnter", opts = {} },
-  -- END EDITING SUPPORT --
-  { "christoomey/vim-tmux-navigator", keys = { "<C-h>", "<C-j>", "<C-k>", "<C-l>" } },
   { "tpope/vim-repeat", keys = { "." } },
+  -- END EDITING SUPPORT --
+  -- START GIT --
+  { "lewis6991/gitsigns.nvim", event = "BufReadPre", opts = {} },
+  -- END GIT --
+  { "christoomey/vim-tmux-navigator", keys = { "<C-h>", "<C-j>", "<C-k>", "<C-l>" } },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
   { import = "plugins" },
 }, {

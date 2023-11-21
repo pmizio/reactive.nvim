@@ -1,6 +1,6 @@
 return {
   "tpope/vim-fugitive",
-  dependencies = { "akinsho/git-conflict.nvim", "lewis6991/gitsigns.nvim" },
+  dependencies = { "akinsho/git-conflict.nvim" },
   cmd = "G",
   config = function()
     local fn = vim.fn

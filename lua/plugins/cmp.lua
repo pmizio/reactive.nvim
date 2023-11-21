@@ -39,6 +39,11 @@ return {
         { name = "path" },
         { name = "buffer" },
       }),
+      snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+      },
       ---@diagnostic disable-next-line: missing-fields
       formatting = {
         format = require("lspkind").cmp_format {

@@ -32,7 +32,6 @@ return {
 
     for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
       require("lspconfig")[server].setup {
-        on_attach = lsp.on_attach,
         handlers = lsp.handlers,
       }
     end
