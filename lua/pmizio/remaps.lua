@@ -52,3 +52,26 @@ map("n", "<leader>m", '"zcc<C-r>=<C-r>z<CR><ESC>', { silent = true })
 map("v", "<leader>m", '"zc<C-r>=<C-r>z<CR><ESC>', { silent = true })
 
 map("n", "<leader>cp", [[:let @+=expand("%")<CR>]], { silent = true })
+
+local function open_in_gh()
+  local user_repo = fn.system("git config --get remote.origin.url")
+    :match "https://github%.com/([%w%d-/]+)%.git"
+
+  if user_repo then
+    local branch = fn.system("git branch --show-current"):gsub("%s*$", "")
+    local file = vim.fn.expand "%:p:~:."
+    local line = vim.api.nvim_win_get_cursor(0)[1]
+    local gh_url = "https://github.com/"
+      .. user_repo
+      .. "/blob/"
+      .. branch
+      .. "/"
+      .. file
+      .. "#L"
+      .. line
+
+    fn.system("open " .. gh_url)
+  end
+end
+
+vim.keymap.set("n", "<leader>go", open_in_gh)
