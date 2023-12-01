@@ -33,6 +33,10 @@ return {
     utils.config_autocmd("BufWritePre", {
       pattern = "*",
       callback = function(e)
+        if vim.g.disable_autoformat then
+          return
+        end
+
         local client = vim.lsp.get_clients({ buf = e.buf, name = "eslint" })[1]
 
         ---@diagnostic disable-next-line: undefined-field
@@ -50,5 +54,9 @@ return {
         })
       end,
     })
+
+    vim.api.nvim_create_user_command("FormatToggle", function()
+      vim.g.disable_autoformat = not vim.g.disable_autoformat
+    end, {})
   end,
 }
