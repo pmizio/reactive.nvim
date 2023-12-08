@@ -24,6 +24,9 @@ return {
         composite_mode = "separate_diagnostic",
         publish_diagnostic_on = "insert_leave",
         -- tsserver_logs = "verbose",
+        tsserver_file_preferences = {
+          importModuleSpecifierPreference = "non-relative",
+        },
       },
     }
   end,

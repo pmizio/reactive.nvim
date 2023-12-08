@@ -33,11 +33,13 @@ return {
     utils.config_autocmd("BufWritePre", {
       pattern = "*",
       callback = function(e)
-        if vim.g.disable_autoformat then
+        local filetype = vim.bo[e.buf].filetype
+
+        if not formatters_by_ft[filetype] or vim.g.disable_autoformat then
           return
         end
 
-        local client = vim.lsp.get_clients({ buf = e.buf, name = "eslint" })[1]
+        local client = vim.lsp.get_active_clients({ buf = e.buf, name = "eslint" })[1]
 
         ---@diagnostic disable-next-line: undefined-field
         if client then
