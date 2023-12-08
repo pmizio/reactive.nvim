@@ -1,9 +1,15 @@
 local builtin = require "telescope.builtin"
 local themes = require "telescope.themes"
 
-local function on_attach(client, bufnr)
-  client.server_capabilities.documentRangeFormattingProvider = false
+local M = {}
 
+M.handlers = {
+  ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+    border = "rounded",
+  }),
+}
+
+function M.on_attach(_, bufnr)
   local function lsp_map(mode, lhs, rhs)
     vim.keymap.set(mode, lhs, rhs, { buffer = bufnr })
   end
@@ -29,4 +35,4 @@ local function on_attach(client, bufnr)
   lsp_map("i", "<C-K>", vim.lsp.buf.signature_help)
 end
 
-return on_attach
+return M

@@ -3,6 +3,7 @@ local g = vim.g
 local config_autocmd = require("pmizio.utils").config_autocmd
 
 vim.cmd "filetype indent off"
+vim.g.mapleader = " "
 set.number = true
 set.relativenumber = true
 set.tabstop = 2
@@ -28,8 +29,6 @@ set.termguicolors = true
 set.pumheight = 10
 set.diffopt:append "vertical"
 set.inccommand = "split"
-set.scrolloff = 10
-set.undodir = vim.fn.stdpath "data" .. "/undodir"
 set.mouse = ""
 
 g.mapleader = " "
