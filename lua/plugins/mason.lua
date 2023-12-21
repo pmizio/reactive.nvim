@@ -14,7 +14,7 @@ return {
     require("mason").setup {}
 
     mason_lspconfig.setup {
-      ensure_installed = { "lua_ls", "rust_analyzer", "eslint" },
+      ensure_installed = { "lua_ls", "rust_analyzer", "eslint", "stylelint_lsp" },
     }
 
     tool_installer.setup {
@@ -30,7 +30,8 @@ return {
     tool_installer.run_on_start()
 
     for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
-      require("lspconfig")[server].setup {
+      local serverConfig = require("lspconfig")[server]
+      local setupObject = {
         handlers = lsp.handlers,
 
         on_attach = function(client, bufnr)
@@ -42,6 +43,13 @@ return {
           end
         end,
       }
+
+      if serverConfig.name == "stylelint_lsp" then
+        setupObject.filetypes =
+          { "postcss", unpack(serverConfig.document_config.default_config.filetypes or {}) }
+      end
+
+      serverConfig.setup(setupObject)
     end
   end,
 }

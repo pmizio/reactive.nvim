@@ -74,4 +74,4 @@ local function open_in_gh()
   end
 end
 
-vim.keymap.set("n", "<leader>go", open_in_gh)
+map("n", "<leader>go", open_in_gh)

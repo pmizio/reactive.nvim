@@ -42,7 +42,7 @@ require("lazy").setup({
   -- START GIT --
   { "lewis6991/gitsigns.nvim", event = "BufReadPre", opts = {} },
   -- END GIT --
-  { "christoomey/vim-tmux-navigator", keys = { "<C-h>", "<C-j>", "<C-k>", "<C-l>" } },
+  { "aserowy/tmux.nvim", keys = { "<C-h>", "<C-j>", "<C-k>", "<C-l>" }, opts = {} },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
   { import = "plugins" },
 }, {

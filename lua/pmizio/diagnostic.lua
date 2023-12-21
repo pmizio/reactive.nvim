@@ -1,6 +1,13 @@
 vim.diagnostic.config {
   underline = true,
-  signs = true,
+  signs = {
+    text = {
+      ERROR = "✘",
+      WARN = "▲",
+      HINT = "⚑",
+      INFO = "»",
+    },
+  },
   virtual_text = true,
   float = {
     show_header = true,
@@ -17,18 +24,3 @@ vim.diagnostic.config {
     end,
   },
 }
-
-local map_hl_to_sign = {
-  DiagnosticSignError = "✘",
-  DiagnosticSignWarn = "▲",
-  DiagnosticSignHint = "⚑",
-  DiagnosticSignInfo = "»",
-}
-
-for hl, sign in pairs(map_hl_to_sign) do
-  vim.fn.sign_define(hl, {
-    texthl = hl,
-    text = sign,
-    numhl = "",
-  })
-end
